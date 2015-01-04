@@ -2,6 +2,7 @@ package com.dragonrider.swrpgcompanion.Scenario;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.support.v7.widget.RecyclerView;
 import android.text.Editable;
 import android.text.style.ClickableSpan;
 import android.text.style.ForegroundColorSpan;
@@ -27,7 +28,14 @@ import java.util.HashMap;
 public class TextScenarioItem extends ScenarioItem {
     public String Text;
 
+    @Override
+    public void UpdateViewHolder(RecyclerView.ViewHolder holder, Context context) {
+        ((ScenarioItemAdapter.TextScenarioViewHolder)holder).textView1.setText(Name);
+        Util.setTextViewSymbols(((ScenarioItemAdapter.TextScenarioViewHolder)holder).textView2, Text, new ScenarioItemCustomTagHandler(context));
 
+    }
+
+/*
     @Override
     public View getView(LayoutInflater inflater, ViewGroup parent) {
         View convertView = inflater.inflate(R.layout.scenarioitem_text, parent, false);
@@ -43,7 +51,9 @@ public class TextScenarioItem extends ScenarioItem {
 
 
         return convertView;
-    }
+    }*/
+
+
 
 
     private class ScenarioItemCustomTagHandler extends Util.StandardTagHangler {
