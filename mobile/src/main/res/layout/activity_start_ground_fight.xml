@@ -5,6 +5,5 @@
     android:layout_margin="10dp"
     android:textColor="@android:color/black"
     android:dividerHeight="10dp"
-    android:divider="@android:color/transparent"
-    android:background="#EEEEEE" />
+    android:divider="@android:color/transparent" />
 

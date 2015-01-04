@@ -6,10 +6,8 @@
     <style name="AppTheme" parent="AppBaseTheme">
         <item name="android:windowContentOverlay">@drawable/ab_solid_shadow_holo</item>
         <item name="android:colorPrimaryDark">#891B1E</item>
-        <item name="android:textColorPrimary">#000000</item>
         <item name="android:colorPrimary">#BC252A</item>
         <item name="android:navigationBarColor">#891B1E</item>
-
         <item name="android:actionBarStyle">@style/MyActionBar</item>
     </style>
 

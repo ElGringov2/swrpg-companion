@@ -47,11 +47,12 @@ public class GroundFightActivity extends Activity {
         }
 		
 
-		
+
 		ListView mainView = (ListView) findViewById(R.id.GroundFightActivyty_MainList);
-				
+
 		mainView.setAdapter(GroundFightScene.MainAdapter);
-		
+
+
 		
 	}
 	

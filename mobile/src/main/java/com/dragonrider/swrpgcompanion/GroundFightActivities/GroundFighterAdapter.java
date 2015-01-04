@@ -30,18 +30,15 @@ import com.dragonrider.swrpgcompanion.NPCViewer.ShowNPCActivity;
 
 public class GroundFighterAdapter extends BaseAdapter {
 	
-	private List<GroundFighter> innerFighters = new ArrayList<GroundFighter>();
+	private List<GroundFighter> innerFighters = new ArrayList<>();
 	
 	private Context actualContext;
 	
 	public GroundFighterAdapter(Context actualContext) {
 		this.actualContext = actualContext;
-        PlayerBitmaps = new Hashtable<String, Bitmap>();
+        PlayerBitmaps = new Hashtable<>();
 	}
-	
-//	public void setActualContext(Context actualContext) {
-//		this.actualContext = actualContext;
-//	}
+
 	public Context getActualContext() {
 		return actualContext;
 	}
@@ -167,7 +164,7 @@ public class GroundFighterAdapter extends BaseAdapter {
 			iColor = R.drawable.spinner_background_red;
 				
 		
-		List<SWListBoxItem> maneuvers = new ArrayList<SWListBoxItem>();
+		List<SWListBoxItem> maneuvers = new ArrayList<>();
 		
 		int iPosition = 0;
 		int iCount = 0;
@@ -195,7 +192,7 @@ public class GroundFighterAdapter extends BaseAdapter {
 
 
 		
-		List<SWListBoxItem> actions = new ArrayList<SWListBoxItem>();
+		List<SWListBoxItem> actions = new ArrayList<>();
 
 		iPosition = 0;
 		iCount = 0;
