@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:id="@+id/mnuAddVehicle"
+        android:icon="@drawable/ic_action_add_person"
+        android:title="@string/Add"
+        android:onClick="mnuAddVehicle_Click"
+        />
+    <item android:id="@+id/mnuSaveFight"
+        android:onClick="mnuSave_Click"
+        android:icon="@drawable/ic_action_save"
+        android:title="@string/save"/>
+    <item android:id="@+id/mnuSaveFightAs"
+        android:icon="@drawable/ic_action_save"
+        android:title="@string/save_as"
+        android:onClick="mnuSaveAs_Click"/>
+</menu>

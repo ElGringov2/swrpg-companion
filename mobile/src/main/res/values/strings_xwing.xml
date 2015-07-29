@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="activity_vehicle_viewer_title">Liste des véhicules</string>
+    <string name="handling">Manoeuvrabilité</string>
+    <string name="silhouette">Silhouette</string>
+    <string name="aft">Poupe</string>
+    <string name="fore">Proue</string>
+    <string name="port">Babord</string>
+    <string name="starboard">Tribord</string>
+    <string name="xwingspeed">Vitesse max</string>
+    <string name="hull_trauma">Points de coque</string>
+    <string name="system_strain">Résistance système</string>
+
+
+    <string name="activity_vehiclefight">Combat X-Wing</string>
+    <string name="select_gunner">Sélectionnez le tireur:</string>
+    <string name="save_as">Enregistrer sous...</string>
+
+
+</resources>

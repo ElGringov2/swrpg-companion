@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <TextView
+        android:text="@string/weapon_damage"
+        android:textSize="24sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <SeekBar
+            android:id="@+id/skDamage"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content" />
+        <TextView
+            android:id="@+id/txtDamage"
+            android:layout_width="32dp"
+            android:gravity="center"
+            android:layout_height="match_parent" />
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Points d'Armure ignorés:"/>
+
+    <RadioGroup android:id="@+id/toggleGroup"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        >
+
+        <ToggleButton android:id="@+id/btn_ignorearmor0"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:textOn="0"
+            android:textOff="0"
+            
+            android:checked="true"
+            />
+        <ToggleButton android:id="@+id/btn_ignorearmor1"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:textOn="1"
+            android:textOff="1"
+            
+            />
+        <ToggleButton android:id="@+id/btn_ignorearmor2"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:textOn="2"
+            android:textOff="2"
+            
+            />
+        <ToggleButton android:id="@+id/btn_ignorearmor3"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:textOn="3"
+            android:textOff="3"
+            
+            />
+        <ToggleButton android:id="@+id/btn_ignorearmor4"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:textOn="4"
+            android:textOff="4"
+            
+            />
+        <ToggleButton android:id="@+id/btn_ignorearmor5"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:textOn="5"
+            android:textOff="5"
+            
+            />
+        <ToggleButton android:id="@+id/btn_ignorearmor6"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:textOn="6"
+            android:textOff="6"
+            
+            />
+        <ToggleButton android:id="@+id/btn_ignorearmor7"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:textOn="7"
+            android:textOff="7"
+            
+            />
+        <ToggleButton android:id="@+id/btn_ignorearmor8"
+            android:layout_height="wrap_content"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:textSize="14sp"
+            android:textOn="8"
+            android:textOff="8"
+            
+            />
+    </RadioGroup>
+    <TextView
+        android:id="@+id/txtFinalDamage"
+        android:text="0 dégâts"
+        android:gravity="center"
+        android:textSize="34sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+</LinearLayout>
