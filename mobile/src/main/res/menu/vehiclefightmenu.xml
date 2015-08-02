@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<menu xmlns:android="http://schemas.android.com/apk/res/android">
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <item android:id="@+id/mnuAddVehicle"
         android:icon="@drawable/ic_action_add_person"
@@ -14,4 +15,15 @@
         android:icon="@drawable/ic_action_save"
         android:title="@string/save_as"
         android:onClick="mnuSaveAs_Click"/>
+    <item android:id="@+id/mnuEnergy"
+        android:title="@string/energy"
+        android:onClick="mnuEnergy_Click"/>
+    <item android:id="@+id/mnuInit"
+        android:title="@string/initiative"
+        android:onClick="mnuInit_Click"/>
+    <item android:id="@+id/mnuNextRound"
+        android:title="@string/next_round"
+        android:onClick="mnuNextRound_Click"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_action_undo"/>
 </menu>

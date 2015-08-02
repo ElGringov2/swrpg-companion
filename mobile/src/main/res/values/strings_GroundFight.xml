@@ -6,6 +6,7 @@
     <string name="strain">Stress</string>
     <string name="soak">Encaissement</string>
     <string name="defense">Défense</string>
+    <string name="energy">Energie</string>
     <string name="meleedefense">Défense CàC</string>
     <string name="rangeddefense">Défense Distance</string>
     

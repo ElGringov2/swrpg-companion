@@ -8,7 +8,6 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.widget.EditText;
 
 import com.dragonrider.swrpgcompanion.R;
@@ -31,9 +30,7 @@ public class VehicleFightActivity extends Activity {
     }
 
     public static void LoadFight(String Filename) {
-        if (adapter == null)
-            adapter.ClearFighters();
-
+        ClearFight();
         adapter.LoadFromFile(Filename);
     }
 
@@ -51,8 +48,15 @@ public class VehicleFightActivity extends Activity {
 
         recyclerView.setAdapter(adapter);
 
-        LinearLayoutManager manager = new LinearLayoutManager(this);
-        recyclerView.setLayoutManager(manager);
+
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
+
+        RecyclerView initiativeRecyclerView = (RecyclerView)findViewById(R.id.InitiativeRecyclerView);
+
+        initiativeRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
+
+        initiativeRecyclerView.setAdapter(adapter.getInitiativeAdapter(this));
 
     }
 
@@ -106,4 +110,19 @@ public class VehicleFightActivity extends Activity {
         else
             adapter.SaveFight();
     }
+
+    public void mnuEnergy_Click(MenuItem v) {
+        adapter.EnergyStep(this);
+    }
+
+    public void mnuInit_Click(MenuItem v) {
+
+    }
+
+    public void mnuNextRound_Click(MenuItem v) {
+        adapter.NextRound();
+        adapter.FinalNotifyDataSetChanged();
+    }
+
+
 }

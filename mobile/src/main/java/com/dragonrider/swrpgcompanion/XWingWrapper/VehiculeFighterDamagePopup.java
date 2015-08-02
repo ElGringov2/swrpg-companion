@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -56,9 +57,34 @@ public class VehiculeFighterDamagePopup {
     private static TextView txtDamage;
     private static TextView txtFinal;
 
+    static RadioButton rdoFore;
+    static RadioButton rdoAft;
+    static RadioButton rdoPort;
+    static RadioButton rdoStarboard;
+
+
+
     public static void Show(Context context, final VehicleFighter fighter, int Damage, final onValidatePopupListener onvalidatePopupListener) {
 
         View baseView = LayoutInflater.from(context).inflate(R.layout.vehicle_damage_popup, null);
+
+
+        rdoFore = (RadioButton) baseView.findViewById(R.id.rdoFore);
+        rdoAft = (RadioButton) baseView.findViewById(R.id.rdoAft);
+        rdoPort = (RadioButton) baseView.findViewById(R.id.rdoPort);
+        rdoStarboard = (RadioButton) baseView.findViewById(R.id.rdoStarboard);
+
+        if (fighter.getBaseVehicle().getSilhouette() <= 4) {
+            rdoStarboard.setVisibility(View.INVISIBLE);
+            rdoPort.setVisibility(View.INVISIBLE);
+        }
+
+        rdoFore.setText(String.format("Avant %d", fighter.getActualDefenseFore()));
+        rdoAft.setText(String.format("Arrière %d", fighter.getActualDefenseAft()));
+        rdoPort.setText(String.format("Bâbord %d", fighter.getActualDefensePort()));
+        rdoStarboard.setText(String.format("Tribord %d", fighter.getActualDefenseStarboard()));
+
+
 
         iDamage = Damage;
 
@@ -66,7 +92,7 @@ public class VehiculeFighterDamagePopup {
         txtFinal = (TextView) baseView.findViewById(R.id.txtFinalDamage);
 
         final SeekBar bar = (SeekBar)baseView.findViewById(R.id.skDamage);
-        bar.setMax(fighter.getBaseVehicle().getArmor() + (fighter.getTotalHullTrauma() - fighter.getActualHullTrauma()));
+        bar.setMax(iDamage + 10);
         bar.setProgress(iDamage);
 
         View.OnClickListener listener = new View.OnClickListener() {
@@ -120,6 +146,48 @@ public class VehiculeFighterDamagePopup {
         builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+
+                if (rdoFore.isChecked()) {
+                    if (iDamage > fighter.getActualDefenseFore()) {
+                        iDamage -= fighter.getActualDefenseFore();
+                        fighter.setActualDefenseFore(0);
+                    }
+                    else {
+                        fighter.setActualDefenseFore(fighter.getActualDefenseFore() - iDamage);
+                        iDamage = 0;
+                    }
+                }
+                if (rdoAft.isChecked()) {
+                    if (iDamage > fighter.getActualDefenseAft()) {
+                        iDamage -= fighter.getActualDefenseAft();
+                        fighter.setActualDefenseAft(0);
+                    }
+                    else {
+                        fighter.setActualDefenseAft(fighter.getActualDefenseAft() - iDamage);
+                        iDamage = 0;
+                    }
+                }
+                if (rdoPort.isChecked()) {
+                    if (iDamage > fighter.getActualDefensePort()) {
+                        iDamage -= fighter.getActualDefensePort();
+                        fighter.setActualDefensePort(0);
+                    }
+                    else {
+                        fighter.setActualDefensePort(fighter.getActualDefensePort() - iDamage);
+                        iDamage = 0;
+                    }
+                }
+                if (rdoStarboard.isChecked()) {
+                    if (iDamage > fighter.getActualDefenseStarboard()) {
+                        iDamage -= fighter.getActualDefenseStarboard();
+                        fighter.setActualDefenseStarboard(0);
+                    }
+                    else {
+                        fighter.setActualDefenseStarboard(fighter.getActualDefenseStarboard() - iDamage);
+                        iDamage = 0;
+                    }
+                }
+                
                 fighter.setActualHullTrauma(fighter.getActualHullTrauma() - iDamage);
                 onvalidatePopupListener.onValidatePopup();
                 dialog.dismiss();

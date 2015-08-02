@@ -126,7 +126,7 @@ public class MainMenuItemFragment extends Fragment {
                 File sdCardRoot = Environment.getExternalStorageDirectory();
                 File dir = new File(sdCardRoot, "SWEotE/Encounters");
                 File[] files = dir.listFiles();
-                List<MainMenuItem> lst = new ArrayList<MainMenuItem>();
+                List<MainMenuItem> lst = new ArrayList<>();
 
                 for (File file : files) {
                     final EncounterFile encounterFile = EncounterFile.fromFile(file.getPath());
@@ -216,7 +216,6 @@ public class MainMenuItemFragment extends Fragment {
                     item.setAction(new MainActivity.IMainMenuItemAction() {
                         @Override
                         public void Action() {
-                            VehicleFightActivity.ClearFight();
                             VehicleFightActivity.LoadFight(file.getAbsolutePath());
                             Intent intent = new Intent(getActivity(), VehicleFightActivity.class);
                             startActivity(intent);

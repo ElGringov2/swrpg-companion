@@ -27,7 +27,7 @@ import java.util.List;
 public class VehicleCrewPopup {
 
     public interface onValidatePopupListener {
-        public void onValidatePopup(Object Result);
+        void onValidatePopup(Object Result);
     }
 
     public static void Show(Context context, onValidatePopupListener onValidate) {

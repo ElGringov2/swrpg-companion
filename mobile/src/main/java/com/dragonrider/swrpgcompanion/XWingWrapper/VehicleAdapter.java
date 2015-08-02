@@ -1,12 +1,10 @@
 package com.dragonrider.swrpgcompanion.XWingWrapper;
 
-import android.content.Context;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.dragonrider.swrpgcompanion.R;
@@ -14,7 +12,7 @@ import com.dragonrider.swrpgcompanion.R;
 import java.util.List;
 
 /**
- * Created by mge637 on 01/03/2015.
+ * Created by mge637 on 01/03/2015.a
  */
 public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.ViewHolder> {
 
@@ -28,12 +26,12 @@ public class VehicleAdapter extends RecyclerView.Adapter<VehicleAdapter.ViewHold
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View baseView = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.listitem_vehicle, viewGroup, false);
-        ViewHolder holder = new ViewHolder(baseView,
+        return new ViewHolder(baseView,
                 (TextView)baseView.findViewById(R.id.title_text),
                 (TextView)baseView.findViewById(R.id.desc_text),
                 (ImageView)baseView.findViewById(R.id.imageView));
 
-        return holder;
+
 
     }
 

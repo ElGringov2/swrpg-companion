@@ -6,8 +6,9 @@ import android.util.JsonWriter;
 
 import com.dragonrider.swrpgcompanion.Classes.Database;
 import com.dragonrider.swrpgcompanion.Classes.NPC;
-import com.dragonrider.swrpgcompanion.Classes.XmlImport;
-import com.google.android.gms.games.Player;
+import com.dragonrider.swrpgcompanion.Classes.RollResult;
+import com.dragonrider.swrpgcompanion.Classes.Skill;
+
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -24,6 +25,10 @@ public class VehicleFighter {
     private int ActualDefenseAft;
     private int ActualDefensePort;
     private int ActualDefenseStarboard;
+
+    private int ActualShieldEnergy = 1;
+    private int ActualEngineEnergy = 1;
+    private int ActualWeaponsEnergy = 1;
 
     private Vehicle baseVehicle;
 
@@ -43,17 +48,18 @@ public class VehicleFighter {
             String name = reader.nextName();
             if (name.startsWith("crew")) {
                 reader.beginObject();
-                CrewWrapper wrapper = new CrewWrapper();
+                CrewWrapper wrapper = new CrewWrapper(null, false, false);
                 while (reader.hasNext()) {
                     switch (reader.nextName()) {
-                        case "IsPlayer":
-                            wrapper.IsPlayer = reader.nextBoolean();
+                        case "isOnPlayerSlot":
+                            wrapper.isOnPlayerSlot = reader.nextBoolean();
                             break;
                         case "PlayerName":
                             String PlayerName = reader.nextString();
                             for (NPC npc : PlayerList)
                                 if (npc.OwnerName.equals(PlayerName)) {
                                     wrapper.baseNPC = npc;
+                                    wrapper.isPlayer = true;
                                     PlayerList.remove(npc);
                                     break;
                             }
@@ -64,6 +70,7 @@ public class VehicleFighter {
                     }
                 }
                 fighter.getCrew().add(wrapper);
+
                 reader.endObject();
 
 
@@ -119,8 +126,8 @@ public class VehicleFighter {
         {
             writer.name("crew" + String.valueOf(crew.indexOf(crewWrapper)));
             writer.beginObject();
-            writer.name("IsPlayer").value(crewWrapper.IsPlayer);
-            if (crewWrapper.IsPlayer)
+            writer.name("isOnPlayerSlot").value(crewWrapper.isOnPlayerSlot);
+            if (crewWrapper.isOnPlayerSlot)
                 writer.name("PlayerName").value(crewWrapper.baseNPC.OwnerName);
             else
                 writer.name("NPC").value(crewWrapper.baseNPC.DatabaseID);
@@ -132,15 +139,37 @@ public class VehicleFighter {
 
     }
 
-    public static class CrewWrapper {
-        public NPC baseNPC;
-        public boolean IsPlayer;
-        public CrewWrapper(){}
-        public CrewWrapper(NPC npc, boolean isPlayer) {
-            baseNPC = npc;
-            IsPlayer = isPlayer;
-        }
+    public int getActualShieldEnergy() {
+        if (baseVehicle.getDefStarboard() + baseVehicle.getDefPort() + baseVehicle.getDefFore() + baseVehicle.getDefAft() == 0)
+            return 0;
+        return ActualShieldEnergy;
     }
+
+    public void setActualShieldEnergy(int actualShieldEnergy) {
+        if (baseVehicle.getDefStarboard() + baseVehicle.getDefPort() + baseVehicle.getDefFore() + baseVehicle.getDefAft() == 0)
+            return;
+        ActualShieldEnergy = actualShieldEnergy;
+    }
+
+    public int getActualEngineEnergy() {
+        return ActualEngineEnergy;
+    }
+
+    public void setActualEngineEnergy(int actualEngineEnergy) {
+        ActualEngineEnergy = actualEngineEnergy;
+    }
+
+    public int getActualWeaponsEnergy() {
+        if (baseVehicle.getWeapons().size() == 0) return 0;
+        return ActualWeaponsEnergy;
+    }
+
+    public void setActualWeaponsEnergy(int actualWeaponsEnergy) {
+        if (baseVehicle.getWeapons().size() == 0) return;
+        ActualWeaponsEnergy = actualWeaponsEnergy;
+    }
+
+
 
     private VehicleFighter () {
 
@@ -176,22 +205,64 @@ public class VehicleFighter {
 
     }
 
-    public int getActualDefenseFore() {
-        return ActualDefenseFore;
-    }
-
-    public VehicleFighter setActualDefenseFore(int actualDefenseFore) {
-        ActualDefenseFore = actualDefenseFore;
-        return this;
-
-    }
 
     public int getActualDefenseAft() {
         return ActualDefenseAft;
 
     }
 
+    public int getBaseDefenseAft() {
+        return 3 + (baseVehicle.getDefAft() * 2 );
+    }
+
+    public int getMaxDefenseAft() {
+        return getBaseDefenseAft() * 2;
+    }
+
+
+    public int getBaseDefenseFore() {
+        return 3 + (baseVehicle.getDefFore() * 2 );
+    }
+
+    public int getMaxDefenseFore() {
+        return getBaseDefenseFore() * 2;
+    }
+
+
+    public int getBaseDefensePort() {
+        return 3 + (baseVehicle.getDefPort() * 2 );
+    }
+
+    public int getMaxDefensePort() {
+        return getBaseDefensePort() * 2;
+    }
+
+    public int getBaseDefenseStarboard() {
+        return 3 + (baseVehicle.getDefStarboard() * 2 );
+    }
+
+    public int getMaxDefenseStarboard() {
+        return getBaseDefenseStarboard() * 2;
+    }
+
+
+
+
+    public VehicleFighter setActualDefenseFore(int actualDefenseFore) {
+        if (actualDefenseFore < 0) actualDefenseFore = 0;
+        if (actualDefenseFore > getMaxDefenseFore()) actualDefenseFore = getMaxDefenseFore();
+        ActualDefenseFore = actualDefenseFore;
+        return this;
+
+    }
+
+    public int getActualDefenseFore() {
+        return ActualDefenseFore;
+    }
+
     public VehicleFighter setActualDefenseAft(int actualDefenseAft) {
+        if (actualDefenseAft < 0) actualDefenseAft = 0;
+        if (actualDefenseAft > getMaxDefenseAft()) actualDefenseAft= getMaxDefenseAft();
         ActualDefenseAft = actualDefenseAft;
         return this;
 
@@ -202,6 +273,8 @@ public class VehicleFighter {
     }
 
     public VehicleFighter setActualDefensePort(int actualDefensePort) {
+        if (actualDefensePort < 0) actualDefensePort = 0;
+        if (actualDefensePort > getMaxDefensePort()) actualDefensePort = getMaxDefensePort();
         ActualDefensePort = actualDefensePort;
         return this;
 
@@ -212,6 +285,8 @@ public class VehicleFighter {
     }
 
     public VehicleFighter setActualDefenseStarboard(int actualDefenseStarboard) {
+        if (actualDefenseStarboard < 0) actualDefenseStarboard = 0;
+        if (actualDefenseStarboard > getMaxDefenseStarboard()) actualDefenseStarboard = getMaxDefenseStarboard();
         ActualDefenseStarboard = actualDefenseStarboard;
         return this;
 
@@ -226,12 +301,14 @@ public class VehicleFighter {
         this.baseVehicle = baseVehicle;
         this.ActualHullTrauma = baseVehicle.getHullTrauma();
         this.ActualSystemStrain = baseVehicle.getSystemStrain();
-        this.ActualDefenseAft = baseVehicle.getDefAft();
-        this.ActualDefenseFore = baseVehicle.getDefFore();
-        this.ActualDefensePort = baseVehicle.getDefPort();
-        this.ActualDefenseStarboard = baseVehicle.getDefStarboard();
+        this.ActualDefenseAft = baseVehicle.getDefAft() > 0 ? getBaseDefenseAft() : 0;
+        this.ActualDefenseFore = baseVehicle.getDefFore() > 0 ? getBaseDefenseFore() : 0;
+        this.ActualDefensePort = baseVehicle.getDefPort() > 0 ? getBaseDefensePort() : 0;
+        this.ActualDefenseStarboard = baseVehicle.getDefStarboard() > 0 ? getBaseDefenseStarboard() : 0;
         return this;
     }
+
+
 
 
     public int getTotalHullTrauma() {
@@ -244,9 +321,29 @@ public class VehicleFighter {
         return baseVehicle.getSystemStrain();
     }
 
-    public void addCrew(NPC npc, boolean isPlayer) {
+    public CrewWrapper addCrew(NPC npc, boolean isPlayer) {
 
-        crew.add(new CrewWrapper(npc, isPlayer));
+        CrewWrapper crewWrapper = new CrewWrapper(npc, isPlayer, isPlayer);
+
+        if (!isPlayer) {
+            //Initiative
+
+            RollResult rr = npc.getSkillRoll(Skill.Skills.cool);
+
+            crewWrapper.initiative = new Initiative();
+            crewWrapper.initiative.Advantages = rr.Advantage();
+            crewWrapper.initiative.Success = rr.Succcess();
+            crewWrapper.initiative.Triumph = rr.Triumph();
+        }
+
+        for (CrewWrapper wrapper : getCrew()) {
+            if (wrapper.isPlayer)
+                crewWrapper.isOnPlayerSlot = true;
+        }
+
+        crew.add(crewWrapper);
+
+        return crewWrapper;
     }
 
     public List<CrewWrapper> getCrew() {
@@ -255,5 +352,18 @@ public class VehicleFighter {
 
     public void removeCrew(CrewWrapper npc) {
         crew.remove(npc);
+    }
+
+
+    @Override
+    public String toString() {
+        return String.format("%s (%s)\n[Coque %d Stress %d] [ARM %d BOU %d MOT %d]",
+                this.getBaseVehicle().getName(),
+                this.getBaseVehicle().getType(),
+                this.getActualHullTrauma(),
+                this.getActualSystemStrain(),
+                this.getActualWeaponsEnergy(),
+                this.getActualShieldEnergy(),
+                this.getActualEngineEnergy());
     }
 }

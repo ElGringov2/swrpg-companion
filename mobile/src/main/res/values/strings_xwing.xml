@@ -16,5 +16,9 @@
     <string name="select_gunner">Sélectionnez le tireur:</string>
     <string name="save_as">Enregistrer sous...</string>
 
+    <string name="shields">Boucliers</string>
+    <string name="engines">Moteurs</string>
+
+
 
 </resources>

@@ -23,6 +23,7 @@ public class VehicleWeapon {
     private String Name;
     private int Damage;
     private int Critical;
+    private boolean Used = false;
 
 
     @Override
@@ -156,5 +157,13 @@ public class VehicleWeapon {
             this.Critical = 99;
             this.Name = "";
         }
+    }
+
+    public boolean isUsed() {
+        return Used;
+    }
+
+    public void setUsed(boolean used) {
+        Used = used;
     }
 }

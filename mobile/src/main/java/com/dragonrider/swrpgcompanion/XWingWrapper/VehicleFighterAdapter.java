@@ -13,6 +13,7 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -20,6 +21,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.dragonrider.swrpgcompanion.Classes.App;
+import com.dragonrider.swrpgcompanion.Classes.InitiativeAdapter;
 import com.dragonrider.swrpgcompanion.Classes.NPC;
 import com.dragonrider.swrpgcompanion.Classes.SWListBoxItem;
 import com.dragonrider.swrpgcompanion.Classes.SWListBoxItemAdapter;
@@ -32,38 +34,166 @@ import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
  * Created by mge637 on 01/03/2015.
- * Gere la liste des vehicules dans un combat.
+ * Gere la liste des véhicules dans un combat.
  */
 public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAdapter.ViewHolder>  {
 
+
+
+    //Nom du fichier dans le cas ou le combat est sauvegardé
     private String Filename = "";
 
+    /**
+     * Obtient le nom du fichier
+     * @return le nom du fichier sur le stockage
+     */
     public String getFilename() {
         return Filename;
     }
+
+    /**
+     * Définit le nom du fichier
+     * @param value Le nom du fichier sur le stockage.
+     */
     public void setFilename(String value) {
         this.Filename = value;
     }
 
+    //Liste des véhicules
     private List<VehicleFighter> Fighters;
 
     /**
      * Constructeur
-     *
+     * @param fighters La liste des véhicules impliqué
      */
     public VehicleFighterAdapter(List<VehicleFighter> fighters) {
+
         Fighters = fighters;
         Players = XmlImport.ImportPCs();
     }
 
 
-
+    //Liste temporaire des joueurs pour eviter doublons
     private List<NPC> Players;
 
+
+    public List<CrewWrapper> getCrews() {
+
+        ArrayList<CrewWrapper> crewWrapperArrayList = new ArrayList<>();
+
+        for (VehicleFighter vehicleFighter : Fighters)
+            crewWrapperArrayList.addAll(vehicleFighter.getCrew());
+
+
+        Collections.sort(crewWrapperArrayList, new Comparator<CrewWrapper>() {
+            @Override
+            public int compare(CrewWrapper lhs, CrewWrapper rhs) {
+                int compareTo = ((Integer)lhs.initiative.Triumph).compareTo(rhs.initiative.Triumph);
+                if (compareTo != 0)
+                    return -compareTo;
+                compareTo = ((Integer)lhs.initiative.Success).compareTo(rhs.initiative.Success);
+                if (compareTo != 0)
+                    return -compareTo;
+                compareTo = -((Integer)lhs.initiative.Advantages).compareTo(rhs.initiative.Advantages);
+                if (compareTo != 0)
+                    return -compareTo;
+
+                if (lhs.isOnPlayerSlot && rhs.isOnPlayerSlot) return 0;
+                if (!lhs.isOnPlayerSlot && !rhs.isOnPlayerSlot) return 0;
+                if (lhs.isOnPlayerSlot) return -1;
+                return 1;
+
+            }
+        });
+
+
+
+        return crewWrapperArrayList;
+
+    }
+
+    public VehicleFighter getVehicle(CrewWrapper crewWrapper) {
+        for (VehicleFighter vehicleFighter : Fighters)
+            for (CrewWrapper inCrew : vehicleFighter.getCrew())
+                if (inCrew.equals(crewWrapper))
+                    return vehicleFighter;
+
+        return null;
+
+    }
+
+    private InitiativeAdapter<CrewWrapper> initiativeAdapter;
+
+    public InitiativeAdapter<CrewWrapper> getInitiativeAdapter(Context context) {
+        if (initiativeAdapter == null) {
+            initiativeAdapter = InitiativeAdapter.fromCrewWrapperList(context, getCrews());
+            initiativeAdapter.onInitiativeClick = onInitiativeAdapterClick;
+        }
+        return initiativeAdapter;
+    }
+
+    private InitiativeAdapter.IInitiativeSlotClick onInitiativeAdapterClick = new InitiativeAdapter.IInitiativeSlotClick() {
+        @Override
+        public void Click(boolean isPlayer, Context context) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            final ArrayList<SWListBoxItem> items = new ArrayList<>();
+            if (isPlayer)
+                for (CrewWrapper wrapper : getUnplayedPC())
+                    items.add(new SWListBoxItem(wrapper.baseNPC.Name, getVehicle(wrapper).toString()).setImage(wrapper.baseNPC.getImage()).setTag(wrapper));
+            else
+                for (CrewWrapper wrapper : getUnplayedNPC())
+                    items.add(new SWListBoxItem(wrapper.baseNPC.Name, getVehicle(wrapper).toString()).setImage(wrapper.baseNPC.getImage()).setTag(wrapper));
+
+            builder.setAdapter(new SWListBoxItemAdapter(context, items), new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    ((CrewWrapper)items.get(which).getTag()).Played  = VehicleFighterAdapter.this.initiativeAdapter.Play((CrewWrapper) items.get(which).getTag());
+                }
+            });
+            builder.setTitle("Personnage suivant");
+            builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
+            builder.show();
+
+        }
+    };
+
+
+    /**
+     * Obtient la liste des personnages joueurs n'ayant pas joué
+     * @return Une liste de crewwrapper
+     */
+    public List<CrewWrapper> getUnplayedPC() {
+        ArrayList<CrewWrapper> unplayed = new ArrayList<>();
+        for (CrewWrapper crewWrapper : getCrews())
+            if (crewWrapper.isOnPlayerSlot && crewWrapper.Played == -1)
+                unplayed.add(crewWrapper);
+
+        return unplayed;
+    }
+
+    /**
+     * Obtient la liste des personnages non joueurs n'ayant pas joué
+     * @return Une liste de crewwrapper
+     */
+    public List<CrewWrapper> getUnplayedNPC() {
+        ArrayList<CrewWrapper> unplayed = new ArrayList<>();
+        for (CrewWrapper crewWrapper : getCrews())
+            if (!crewWrapper.isOnPlayerSlot && crewWrapper.Played == -1)
+                unplayed.add(crewWrapper);
+
+        return unplayed;
+    }
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
@@ -91,7 +221,16 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
 
     public void addVehicle(Vehicle vehicle) {
         Fighters.add(new VehicleFighter(vehicle));
-        notifyDataSetChanged();
+
+        NextRound();
+        FinalNotifyDataSetChanged();
+    }
+
+
+    public void NextRound() {
+        for (VehicleFighter fighter : Fighters)
+            for (CrewWrapper wrapper : fighter.getCrew())
+                wrapper.Played = -1;
     }
 
 
@@ -160,6 +299,65 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
         Fighters.clear();
     }
 
+    /**
+     * Effectue une phase d'énergie pour tous les vaisseaux
+     * @param context Un contexte pour popups
+     */
+    public void EnergyStep(Context context) {
+        for (VehicleFighter fighter : Fighters)
+        {
+            int iShield = fighter.getActualShieldEnergy() - 1;
+            fighter.setActualDefenseFore(fighter.getActualDefenseFore() + (fighter.getBaseVehicle().getDefFore() * 2 * iShield));
+            fighter.setActualDefenseAft(fighter.getActualDefenseAft() + (fighter.getBaseVehicle().getDefAft() * 2 * iShield));
+            fighter.setActualDefensePort(fighter.getActualDefensePort() + (fighter.getBaseVehicle().getDefPort() * 2 * iShield));
+            fighter.setActualDefenseStarboard(fighter.getActualDefenseStarboard() + (fighter.getBaseVehicle().getDefStarboard() * 2 * iShield));
+
+
+            if (fighter.getActualWeaponsEnergy() == 2) {
+                for (VehicleWeapon wp : fighter.getBaseVehicle().getWeapons())
+                    wp.setUsed(false);
+            }
+            else if (fighter.getActualWeaponsEnergy() == 1) {
+
+                final ArrayList<VehicleWeapon> wps = new ArrayList<>();
+                for (VehicleWeapon wp : fighter.getBaseVehicle().getWeapons())
+                    if (wp.isUsed())
+                        wps.add(wp);
+
+                if (wps.size() == 1)
+                    wps.get(0).setUsed(false);
+
+                if (wps.size() > 1) {
+
+                    AlertDialog.Builder builder = new AlertDialog.Builder(context);
+
+                    builder.setTitle("Energie dans les armes");
+
+                    ArrayAdapter<VehicleWeapon> vehicleWeaponArrayAdapter = new ArrayAdapter<>(context, android.R.layout.simple_expandable_list_item_1, wps);
+                    builder.setAdapter(vehicleWeaponArrayAdapter, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            wps.get(which).setUsed(false);
+                            FinalNotifyDataSetChanged();
+                        }
+                    });
+                    builder.show();
+                }
+            }
+
+        }
+
+        this.FinalNotifyDataSetChanged();
+    }
+
+    public void FinalNotifyDataSetChanged() {
+        this.notifyDataSetChanged();
+
+        initiativeAdapter.updateData(getCrews());
+
+
+
+    }
 
     public class ViewHolder extends RecyclerView.ViewHolder {
 
@@ -176,7 +374,9 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
         private ImageView IconImageView;
         private Button btnDamage;
         private Button btnDefense;
+        private Button btnEnergy;
         private TextView SquadronNumber;
+        private TextView EnergyInfo;
 
         private LinearLayout crewLayout;
         private LinearLayout weaponLayout;
@@ -201,9 +401,10 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
             IconImageView = (ImageView)itemView.findViewById(R.id.IconImageView);
             btnDamage = (Button)itemView.findViewById(R.id.btnDamage);
             btnDefense = (Button)itemView.findViewById(R.id.btnSwitchDefense);
+            btnEnergy = (Button)itemView.findViewById(R.id.btnEnergy);
             crewLayout = (LinearLayout)itemView.findViewById(R.id.lstCrew);
             SquadronNumber = (TextView)itemView.findViewById(R.id.txtSquadronNumber);
-
+            EnergyInfo = (TextView)itemView.findViewById(R.id.txtEnergy);
 
 
 
@@ -232,7 +433,7 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
             HullTrauma.setProgress(fighter.getActualHullTrauma());
             HullTraumaValue.setText(String.valueOf(fighter.getActualHullTrauma()));
             SquadronNumber.setText(String.valueOf(FighterID+1));
-
+            EnergyInfo.setText(String.format("Armes: %d Boucliers: %d Moteurs: %d", fighter.getActualWeaponsEnergy(), fighter.getActualShieldEnergy(), fighter.getActualEngineEnergy()));
             SilhouetteImageView.setImageBitmap(fighter.getBaseVehicle().getImageSilhouette());
             IconImageView.setImageBitmap(fighter.getBaseVehicle().getImageIcon());
 
@@ -245,8 +446,8 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
             int MarginDP = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 4, metrics);
 
 
-            param.setMargins(MarginDP,MarginDP,MarginDP,MarginDP);
-            for (final VehicleFighter.CrewWrapper npc : fighter.getCrew())
+            param.setMargins(MarginDP, MarginDP, MarginDP, MarginDP);
+            for (final CrewWrapper npc : fighter.getCrew())
             {
                 ImageView view = new ImageView(crewLayout.getContext());
                 view.setImageBitmap(npc.baseNPC.getImage());
@@ -255,11 +456,11 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
                     @Override
                     public void onClick(View v) {
 
-                        if (npc.IsPlayer)
+                        if (npc.isPlayer)
                             Players.add(npc.baseNPC);
 
                         fighter.removeCrew(npc);
-                        VehicleFighterAdapter.this.notifyDataSetChanged();
+                        VehicleFighterAdapter.this.FinalNotifyDataSetChanged();
 
                     }
                 });
@@ -294,6 +495,8 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     HullTraumaValue.setText(String.valueOf(progress));
                     if (fromUser) Fighters.get(FighterID).setActualHullTrauma(progress);
+
+                    //TODO Si zero, popup de suppression du vaisseau + récap des personnages a bord pour blessures
                 }
 
                 @Override
@@ -319,7 +522,7 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
                     DefenseSwitchPopup.Show(btnDefense.getContext(), Fighters.get(FighterID), new DefenseSwitchPopup.onValidatePopupListener() {
                         @Override
                         public void onValidatePopup() {
-                            VehicleFighterAdapter.this.notifyDataSetChanged();
+                            VehicleFighterAdapter.this.FinalNotifyDataSetChanged();
 
                         }
                     });
@@ -333,13 +536,25 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
                     VehiculeFighterDamagePopup.Show(btnDamage.getContext(), Fighters.get(FighterID), new VehiculeFighterDamagePopup.onValidatePopupListener() {
                         @Override
                         public void onValidatePopup() {
-                            VehicleFighterAdapter.this.notifyDataSetChanged();
+                            VehicleFighterAdapter.this.FinalNotifyDataSetChanged();
 
                         }
                     });
                 }
             });
 
+            btnEnergy.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    VehicleFighterEnergyPopup.Show(btnDamage.getContext(), Fighters.get(FighterID), new DefenseSwitchPopup.onValidatePopupListener() {
+                        @Override
+                        public void onValidatePopup() {
+                            VehicleFighterAdapter.this.FinalNotifyDataSetChanged();
+
+                        }
+                    });
+                }
+            });
 
             weaponLayout = (LinearLayout)itemView.findViewById(R.id.WeaponList);
             weaponLayout.removeAllViews();
@@ -352,12 +567,13 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
                 TextView txt = new TextView(weaponLayout.getContext());
                 txt.setText(wp.toString());
                 txt.setTextSize(23);
+                if (wp.isUsed()) txt.setTextSize(12);
                 txt.setLayoutParams(params);
                 txt.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         ArrayList<SWListBoxItem> npcArrayList = new ArrayList<>();
-                        for (VehicleFighter.CrewWrapper wrapper : Fighters.get(FighterID).getCrew())
+                        for (CrewWrapper wrapper : Fighters.get(FighterID).getCrew())
                             npcArrayList.add(NPC.createNPCItem(wrapper.baseNPC));
                         final SWListBoxItemAdapter adapter = new SWListBoxItemAdapter(weaponLayout.getContext(), npcArrayList);
 
@@ -380,7 +596,8 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
                                                                 VehiculeFighterDamagePopup.Show(btnDamage.getContext(), (VehicleFighter)((SWListBoxItem)items.getItem(which)).getTag(), RealDamage, new VehiculeFighterDamagePopup.onValidatePopupListener() {
                                                                     @Override
                                                                     public void onValidatePopup() {
-                                                                        VehicleFighterAdapter.this.notifyDataSetChanged();
+                                                                        wp.setUsed(true);
+                                                                        VehicleFighterAdapter.this.FinalNotifyDataSetChanged();
 
                                                                     }
                                                                 });
@@ -418,7 +635,8 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
                         @Override
                         public void onValidatePopup(Object Result) {
                             Fighters.get(FighterID).addCrew((NPC)Result, false);
-                            VehicleFighterAdapter.this.notifyDataSetChanged();
+                            NextRound();
+                            VehicleFighterAdapter.this.FinalNotifyDataSetChanged();
 
 
                         }
@@ -433,10 +651,23 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
                     public void onClick(View v) {
                         VehicleCrewPopup.Show(itemView.getContext(), new VehicleCrewPopup.onValidatePopupListener() {
                             @Override
-                            public void onValidatePopup(Object Result) {
-                                Fighters.get(FighterID).addCrew((NPC)Result, true);
-                                Players.remove(Result);
-                                VehicleFighterAdapter.this.notifyDataSetChanged();
+                            public void onValidatePopup(final Object Result) {
+
+                                InitiativePopup.Show(itemView.getContext(), new InitiativePopup.IOnValidateInitiative() {
+                                    @Override
+                                    public void OnValidate(int Triumph, int Success, int Advantage) {
+                                        CrewWrapper wrapper = Fighters.get(FighterID).addCrew((NPC) Result, true);
+                                        wrapper.initiative.Triumph = Triumph;
+                                        wrapper.initiative.Success = Success;
+                                        wrapper.initiative.Advantages = Advantage;
+                                        Players.remove(Result);
+
+                                        NextRound();
+                                        VehicleFighterAdapter.this.FinalNotifyDataSetChanged();
+
+                                    }
+                                });
+
 
                             }
                         }, Players);
