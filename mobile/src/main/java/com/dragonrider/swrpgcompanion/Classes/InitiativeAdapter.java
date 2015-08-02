@@ -14,6 +14,8 @@ import com.dragonrider.swrpgcompanion.XWingWrapper.CrewWrapper;
 import java.util.ArrayList;
 import java.util.List;
 
+
+
 /**
  * Created by mge637 on 01/08/2015. Gere les listes d'initiative
  */
