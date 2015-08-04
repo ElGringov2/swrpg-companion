@@ -45,7 +45,7 @@ public class VehiculeFighterDamagePopup {
     private static int iDamage = 0;
 
     public interface onValidatePopupListener {
-        public void onValidatePopup() ;
+        void onValidatePopup() ;
     }
 
 
@@ -92,6 +92,7 @@ public class VehiculeFighterDamagePopup {
         txtFinal = (TextView) baseView.findViewById(R.id.txtFinalDamage);
 
         final SeekBar bar = (SeekBar)baseView.findViewById(R.id.skDamage);
+
         bar.setMax(iDamage + 10);
         bar.setProgress(iDamage);
 
@@ -100,7 +101,7 @@ public class VehiculeFighterDamagePopup {
             public void onClick(View v) {
                 ((RadioGroup)v.getParent()).check(v.getId());
                 mIgnoreArmor = Integer.valueOf((String)((ToggleButton)v).getText());
-                UpdateText(bar.getProgress(), fighter);
+                UpdateText(bar.getProgress());
             }
         };
 
@@ -118,11 +119,11 @@ public class VehiculeFighterDamagePopup {
 
 
 
-        bar.setMax(fighter.getTotalHullTrauma());
+        //bar.setMax(fighter.getTotalHullTrauma());
         bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                UpdateText(progress, fighter);
+                UpdateText(progress);
             }
 
             @Override
@@ -136,7 +137,7 @@ public class VehiculeFighterDamagePopup {
             }
         });
 
-        UpdateText(Damage, fighter);
+        UpdateText(Damage);
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -187,8 +188,12 @@ public class VehiculeFighterDamagePopup {
                         iDamage = 0;
                     }
                 }
-                
-                fighter.setActualHullTrauma(fighter.getActualHullTrauma() - iDamage);
+                int iArmor = fighter.getBaseVehicle().getArmor() - mIgnoreArmor;
+                if (iArmor < 0) iArmor = 0;
+                iDamage -= iArmor;
+                if (iDamage >0)
+                    fighter.setActualHullTrauma(fighter.getActualHullTrauma() - iDamage);
+
                 onvalidatePopupListener.onValidatePopup();
                 dialog.dismiss();
             }
@@ -209,10 +214,10 @@ public class VehiculeFighterDamagePopup {
 
     }
 
-    private static void UpdateText(int progress, VehicleFighter fighter) {
-        int iArmor = fighter.getBaseVehicle().getArmor() - mIgnoreArmor;
-        if (iArmor < 0) iArmor = 0;
-        iDamage = progress - iArmor;
+    private static void UpdateText(int progress) {
+        //int iArmor = fighter.getBaseVehicle().getArmor() - mIgnoreArmor;
+        //if (iArmor < 0) iArmor = 0;
+        //iDamage = progress - iArmor;
         if (iDamage < 0) iDamage = 0;
 
         txtDamage.setText(String.valueOf(progress));

@@ -23,14 +23,14 @@ public class SWGroupListBoxItemAdapter extends BaseExpandableListAdapter {
 	
 	private HashMap<String, List<SWListBoxItem>> _listDataChild;
 	
-	private List<String> _listDataHeader = new ArrayList<String>();
+	private List<String> _listDataHeader = new ArrayList<>();
 
 	public SWGroupListBoxItemAdapter(Context context, List<SWListBoxItem> data) {
 
 		this.context = context;
 		
 		
-		_listDataChild = new HashMap<String, List<SWListBoxItem>>();
+		_listDataChild = new HashMap<>();
 		
 		for (SWListBoxItem item : data)
 		{
@@ -66,7 +66,7 @@ public class SWGroupListBoxItemAdapter extends BaseExpandableListAdapter {
 	@Override
 	public Object getGroup(int groupPosition) {
         List<SWListBoxItem> group = _listDataChild.get(_listDataHeader.get(groupPosition));
-        List<SWListBoxItem> tempGroup = new ArrayList<SWListBoxItem>();
+        List<SWListBoxItem> tempGroup = new ArrayList<>();
         for (SWListBoxItem item : group)
             if (ShowChild(item)) tempGroup.add(item);
 
@@ -78,6 +78,7 @@ public class SWGroupListBoxItemAdapter extends BaseExpandableListAdapter {
 	public Object getChild(int groupPosition, int childPosition) {
 
         return ((List<SWListBoxItem>)getGroup(groupPosition)).get(childPosition);
+
 	}
 
     private boolean ShowChild(SWListBoxItem item) {

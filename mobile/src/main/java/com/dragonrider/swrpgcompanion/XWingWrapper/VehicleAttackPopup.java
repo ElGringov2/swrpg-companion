@@ -30,11 +30,12 @@ public class VehicleAttackPopup {
     private static int iDamage = 0;
 
 
-    public interface onSuccessfulAttackListener {
-        public void onSuccessfulAttack(int RealDamage) ;
+    public interface onAttackListener {
+        void onSuccessfullAttack(int RealDamage) ;
+        void onUnsuccessfullAttack() ;
     }
 
-    public static void Show(final Context context, VehicleFighter Target, NPC Shooter, VehicleWeapon Weapon, final onSuccessfulAttackListener listener) {
+    public static void Show(final Context context, VehicleFighter Target, NPC Shooter, VehicleWeapon Weapon, final onAttackListener listener) {
 
 
         @SuppressLint("InflateParams")
@@ -57,7 +58,10 @@ public class VehicleAttackPopup {
 
 
 
+
         final TextView txtDamage = (TextView)baseView.findViewById(R.id.txtDamage);
+
+
 
         final SeekBar bar = (SeekBar) baseView.findViewById(R.id.skDamage);
 
@@ -65,10 +69,14 @@ public class VehicleAttackPopup {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
 
-                iDamage = progress + iMinDamage;
+                if (rollResult.Succcess() > 0)
+                    iDamage = progress + iMinDamage;
+                else
+                    iDamage = progress;
                 txtDamage.setText(String.valueOf(iDamage));
 
                 UpdateTextView();
+
             }
 
             @Override
@@ -81,7 +89,7 @@ public class VehicleAttackPopup {
                 //Vide
             }
         });
-        bar.setMax(Target.getBaseVehicle().getArmor() + (Target.getTotalHullTrauma() - Target.getActualHullTrauma()));
+        bar.setMax(Target.getBaseVehicle().getArmor() + (Target.getTotalHullTrauma() - Target.getActualHullTrauma()) + 10);
 
 
 
@@ -125,7 +133,10 @@ public class VehicleAttackPopup {
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        listener.onSuccessfulAttack(iDamage);
+                        if (iDamage <= 0)
+                            listener.onUnsuccessfullAttack();
+                        else
+                            listener.onSuccessfullAttack(iDamage);
                         dialog.dismiss();
                     }
                 })
@@ -138,7 +149,7 @@ public class VehicleAttackPopup {
 
         rollResult.PopulateResult(llResults);
 
-        int progress = rollResult.Succcess() - 1;
+        int progress = rollResult.Succcess();
         if (progress < 0) progress = 0;
         DamageSeekBar.setProgress(progress);
 

@@ -11,19 +11,23 @@ public class CrewWrapper {
      */
     public NPC baseNPC;
     /**
-     * Définit si le personnage joue sur un slot PJ
+     * DÃ©finit si le personnage joue sur un slot PJ
      */
     public boolean isOnPlayerSlot;
     /**
-     * Définit si le personnage est un joueur
+     * DÃ©finit si le personnage est un joueur
      */
     public boolean isPlayer;
+    /**
+     * DÃ©finit l'ID du vaisseau
+     */
+    public int VehicleID;
 
     /**
      * CTOR
      * @param npc Le personnage de base
-     * @param isOnPlayerSlot Définit si le personnage agit en joueur et non en non-joueur
-     * @param isPlayer Définit si le personnage est un joueur
+     * @param isOnPlayerSlot DÃ©finit si le personnage agit en joueur et non en non-joueur
+     * @param isPlayer DÃ©finit si le personnage est un joueur
      */
     public CrewWrapper(NPC npc, boolean isOnPlayerSlot, boolean isPlayer) {
         baseNPC = npc;
@@ -32,11 +36,11 @@ public class CrewWrapper {
     }
 
     /**
-     * Définit l'initiative du personnage
+     * DÃ©finit l'initiative du personnage
      */
     public Initiative initiative = new Initiative();
     /**
-     * Définit l'ordre de jeu (-1 = non joué)
+     * DÃ©finit l'ordre de jeu (-1 = non jouÃ©)
      */
     public int Played = -1;
 }

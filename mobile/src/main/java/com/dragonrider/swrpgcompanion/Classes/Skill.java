@@ -77,7 +77,7 @@ public class Skill {
 	}
 	
 	public static ArrayList<String> getAllSkillNames() {
-		ArrayList<String> array = new ArrayList<String>();
+		ArrayList<String> array = new ArrayList<>();
 		for (int i = 0; i < Skills.values().length; i++) 
 			array.add(App.getContext().getString(SkillRessources[i]));
 		
@@ -179,12 +179,14 @@ public class Skill {
 	}
 	
 	public static ArrayList<Skill> fromDatabaseString(String s) {
-		ArrayList<Skill> array = new ArrayList<Skill>();
+		ArrayList<Skill> array = new ArrayList<>();
 		for (int i = 0; i < s.length(); i += 4)
 		{
 			Skill sk = Skill.getNewSkill(Integer.valueOf(s.substring(i, i+2)));
-			sk.Value = Integer.valueOf(s.substring(i+2, i+4));
-			array.add(sk);
+			if (sk != null) {
+                sk.Value = Integer.valueOf(s.substring(i + 2, i + 4));
+                array.add(sk);
+            }
 		}
 		
 		

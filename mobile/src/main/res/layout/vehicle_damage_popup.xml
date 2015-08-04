@@ -57,7 +57,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Points d'Armure ignorés:"/>
+        android:text="@string/armor_points_ignored"/>
 
     <RadioGroup android:id="@+id/toggleGroup"
         android:layout_width="fill_parent"
@@ -150,7 +150,7 @@
     </RadioGroup>
     <TextView
         android:id="@+id/txtFinalDamage"
-        android:text="0 dégâts"
+        android:text="@string/zero_damage"
         android:gravity="center"
         android:textSize="34sp"
         android:layout_width="match_parent"

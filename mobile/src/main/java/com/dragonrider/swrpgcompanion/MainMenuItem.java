@@ -60,14 +60,10 @@ public class MainMenuItem {
 
 
     @Override
-    public boolean equals(Object o) {
-        if (o == null) return false;
-        if (o.getClass() != MainMenuItem.class) return false;
+         public boolean equals(Object o) {
 
-        if (((MainMenuItem)o).getSpecialID() != -1 &&
-                ((MainMenuItem)o).getSpecialID() == this.getSpecialID()) return true;
+        return o != null && o.getClass() == MainMenuItem.class && (((MainMenuItem) o).getSpecialID() != -1 && ((MainMenuItem) o).getSpecialID() == this.getSpecialID() || super.equals(o));
 
-        return super.equals(o);
     }
 
     public MainMenuItem setCheck(MainActivity.IMainMenuEnableCheck check) {
@@ -76,8 +72,7 @@ public class MainMenuItem {
     }
 
     public boolean getIsEnabled() {
-        if (check == null) return true;
-        return check.Check();
+        return check == null || check.Check();
 
     }
 }

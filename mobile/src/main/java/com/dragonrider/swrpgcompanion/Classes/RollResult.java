@@ -673,6 +673,22 @@ public class RollResult implements Cloneable {
 		
 		return finalString;
 	}
+
+
+    public void InvertDices() {
+        int temp = this.DiceDifficulty;
+        this.DiceDifficulty = this.DiceAbility;
+        this.DiceAbility = temp;
+
+        temp = this.DiceChallenge;
+        this.DiceChallenge = this.DiceProficiency;
+        this.DiceProficiency = temp;
+
+        temp = this.DiceBoost;
+        this.DiceBoost = this.DiceSetback;
+        this.DiceSetback = temp;
+
+    }
     
     
     public void PopulateResult(ViewGroup diceGroup) {

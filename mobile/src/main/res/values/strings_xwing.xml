@@ -18,7 +18,9 @@
 
     <string name="shields">Boucliers</string>
     <string name="engines">Moteurs</string>
-
+    <string name="armor_points_ignored">Points d\'Armure ignorés:</string>
+    <string name="zero_damage">0 dégâts</string>
+    <string name="duplicate">Dupliquer</string>
 
 
 </resources>

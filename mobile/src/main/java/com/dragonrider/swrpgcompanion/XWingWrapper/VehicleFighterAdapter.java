@@ -4,15 +4,19 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Environment;
+import android.widget.PopupMenu ;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.JsonReader;
 import android.util.JsonWriter;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ActionMenuView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -23,8 +27,11 @@ import android.widget.TextView;
 import com.dragonrider.swrpgcompanion.Classes.App;
 import com.dragonrider.swrpgcompanion.Classes.InitiativeAdapter;
 import com.dragonrider.swrpgcompanion.Classes.NPC;
+import com.dragonrider.swrpgcompanion.Classes.RollResult;
 import com.dragonrider.swrpgcompanion.Classes.SWListBoxItem;
 import com.dragonrider.swrpgcompanion.Classes.SWListBoxItemAdapter;
+import com.dragonrider.swrpgcompanion.Classes.Skill;
+import com.dragonrider.swrpgcompanion.Classes.Util;
 import com.dragonrider.swrpgcompanion.Classes.XmlImport;
 import com.dragonrider.swrpgcompanion.R;
 
@@ -37,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by mge637 on 01/03/2015.
@@ -87,8 +95,11 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
 
         ArrayList<CrewWrapper> crewWrapperArrayList = new ArrayList<>();
 
-        for (VehicleFighter vehicleFighter : Fighters)
+        for (VehicleFighter vehicleFighter : Fighters) {
+            for (CrewWrapper wrapper : vehicleFighter.getCrew())
+                wrapper.VehicleID = Fighters.indexOf(vehicleFighter);
             crewWrapperArrayList.addAll(vehicleFighter.getCrew());
+        }
 
 
         Collections.sort(crewWrapperArrayList, new Comparator<CrewWrapper>() {
@@ -145,10 +156,10 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
             final ArrayList<SWListBoxItem> items = new ArrayList<>();
             if (isPlayer)
                 for (CrewWrapper wrapper : getUnplayedPC())
-                    items.add(new SWListBoxItem(wrapper.baseNPC.Name, getVehicle(wrapper).toString()).setImage(wrapper.baseNPC.getImage()).setTag(wrapper));
+                    items.add(new SWListBoxItem(wrapper.baseNPC.Name, String.format("(%d) %s", wrapper.VehicleID, getVehicle(wrapper).toString())).setImage(wrapper.baseNPC.getImage()).setTag(wrapper));
             else
                 for (CrewWrapper wrapper : getUnplayedNPC())
-                    items.add(new SWListBoxItem(wrapper.baseNPC.Name, getVehicle(wrapper).toString()).setImage(wrapper.baseNPC.getImage()).setTag(wrapper));
+                    items.add(new SWListBoxItem(wrapper.baseNPC.Name, String.format("(%d) %s", wrapper.VehicleID, getVehicle(wrapper).toString())).setImage(wrapper.baseNPC.getImage()).setTag(wrapper));
 
             builder.setAdapter(new SWListBoxItemAdapter(context, items), new DialogInterface.OnClickListener() {
                 @Override
@@ -192,6 +203,7 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
             if (!crewWrapper.isOnPlayerSlot && crewWrapper.Played == -1)
                 unplayed.add(crewWrapper);
 
+
         return unplayed;
     }
 
@@ -222,6 +234,12 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
     public void addVehicle(Vehicle vehicle) {
         Fighters.add(new VehicleFighter(vehicle));
 
+        NextRound();
+        FinalNotifyDataSetChanged();
+    }
+
+    public void removeVehicle(int fighter) {
+        Fighters.remove(fighter);
         NextRound();
         FinalNotifyDataSetChanged();
     }
@@ -377,6 +395,7 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
         private Button btnEnergy;
         private TextView SquadronNumber;
         private TextView EnergyInfo;
+        private View vOverflow;
 
         private LinearLayout crewLayout;
         private LinearLayout weaponLayout;
@@ -405,7 +424,7 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
             crewLayout = (LinearLayout)itemView.findViewById(R.id.lstCrew);
             SquadronNumber = (TextView)itemView.findViewById(R.id.txtSquadronNumber);
             EnergyInfo = (TextView)itemView.findViewById(R.id.txtEnergy);
-
+            vOverflow = itemView.findViewById(R.id.mnuOverflow);
 
 
         }
@@ -556,6 +575,45 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
                 }
             });
 
+            vOverflow.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    PopupMenu menu = new PopupMenu(v.getContext(), v);
+                    menu.getMenuInflater().inflate(R.menu.vehiculefighterfenu, menu.getMenu());
+                    menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
+                        @Override
+                        public boolean onMenuItemClick(MenuItem menuItem) {
+                            if (menuItem.getItemId() == R.id.mnuRemove) {
+                                for (CrewWrapper wrapper : Fighters.get(FighterID).getCrew()) {
+                                    if (wrapper.isPlayer)
+                                        VehicleFighterAdapter.this.Players.add(wrapper.baseNPC);
+
+                                    Fighters.get(FighterID).removeCrew(wrapper);
+
+
+                                }
+
+                                VehicleFighterAdapter.this.removeVehicle(FighterID);
+
+
+                            } else if (menuItem.getItemId() == R.id.mnuDuplicate) {
+                                //Duplicate
+                                VehicleFighter duplicate = Fighters.get(FighterID).Clone();
+                                Fighters.add(duplicate);
+                                NextRound();
+                                FinalNotifyDataSetChanged();
+
+                                return true;
+                            }
+
+
+                            return false;
+                        }
+                    });
+                    menu.show();
+                }
+            });
+
             weaponLayout = (LinearLayout)itemView.findViewById(R.id.WeaponList);
             weaponLayout.removeAllViews();
 
@@ -574,7 +632,7 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
                     public void onClick(View v) {
                         ArrayList<SWListBoxItem> npcArrayList = new ArrayList<>();
                         for (CrewWrapper wrapper : Fighters.get(FighterID).getCrew())
-                            npcArrayList.add(NPC.createNPCItem(wrapper.baseNPC));
+                            npcArrayList.add(new SWListBoxItem(wrapper.baseNPC.Name, wrapper.baseNPC.Description).setImage(wrapper.baseNPC.getImage()).setTag(wrapper));
                         final SWListBoxItemAdapter adapter = new SWListBoxItemAdapter(weaponLayout.getContext(), npcArrayList);
 
                         new AlertDialog.Builder(weaponLayout.getContext())
@@ -583,26 +641,78 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         //target
-                                        final NPC Gunner = (NPC)((SWListBoxItem)adapter.getItem(which)).getTag();
+                                        final CrewWrapper Gunner = (CrewWrapper)((SWListBoxItem)adapter.getItem(which)).getTag();
                                         final SWListBoxItemAdapter items = CreateVehicleList(weaponLayout.getContext(), Fighters, FighterID);
                                         new AlertDialog.Builder(weaponLayout.getContext())
                                                 .setTitle("Cible:")
                                                 .setAdapter(items, new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, final int which) {
-                                                        VehicleAttackPopup.Show(weaponLayout.getContext(), (VehicleFighter)((SWListBoxItem)items.getItem(which)).getTag(), Gunner, wp, new VehicleAttackPopup.onSuccessfulAttackListener() {
-                                                            @Override
-                                                            public void onSuccessfulAttack(int RealDamage) {
-                                                                VehiculeFighterDamagePopup.Show(btnDamage.getContext(), (VehicleFighter)((SWListBoxItem)items.getItem(which)).getTag(), RealDamage, new VehiculeFighterDamagePopup.onValidatePopupListener() {
-                                                                    @Override
-                                                                    public void onValidatePopup() {
-                                                                        wp.setUsed(true);
-                                                                        VehicleFighterAdapter.this.FinalNotifyDataSetChanged();
+                                                        if (Gunner.isPlayer) {
+                                                            RollResult pilot;
+                                                            if (((VehicleFighter)((SWListBoxItem)items.getItem(which)).getTag()).getCrew().size() > 0)
+                                                                pilot = ((VehicleFighter)((SWListBoxItem)items.getItem(which)).getTag()).getCrew().get(0).baseNPC.getSkillRoll(Skill.Skills.piloting_space, new Random().nextInt(), 0);
+                                                            else
+                                                                pilot = new RollResult();
 
-                                                                    }
-                                                                });
-                                                            }
-                                                        });
+
+                                                            pilot.InvertDices();
+
+                                                            TextView baseTextView = new TextView(weaponLayout.getContext());
+                                                            Util.setTextViewSymbols(baseTextView, "Difficulté: " + pilot.toSymbolFormattableString());
+                                                            LinearLayout.LayoutParams layoutParams = new ActionMenuView.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+                                                            layoutParams.gravity = Gravity.CENTER;
+                                                            LinearLayout linearLayout = new LinearLayout(weaponLayout.getContext());
+                                                            linearLayout.setLayoutParams(layoutParams);
+                                                            linearLayout.addView(baseTextView);
+                                                            AlertDialog.Builder builder = new AlertDialog.Builder(weaponLayout.getContext());
+
+                                                            builder.setView(linearLayout);
+
+                                                            builder.setTitle(String.format("%s %s", weaponLayout.getContext().getString(R.string.action_attack_on), ((SWListBoxItem) items.getItem(which)).getName()));
+                                                                    builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                                                        @Override
+                                                                        public void onClick(DialogInterface dialog, int which2) {
+                                                                            VehiculeFighterDamagePopup.Show(btnDamage.getContext(), (VehicleFighter) ((SWListBoxItem) items.getItem(which)).getTag(), 0, new VehiculeFighterDamagePopup.onValidatePopupListener() {
+                                                                                @Override
+                                                                                public void onValidatePopup() {
+                                                                                    wp.setUsed(true);
+                                                                                    VehicleFighterAdapter.this.FinalNotifyDataSetChanged();
+
+                                                                                }
+                                                                            });
+                                                                            dialog.dismiss();
+                                                                        }
+                                                                    });
+                                                            builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                                                                @Override
+                                                                public void onClick(DialogInterface dialog, int which) {
+                                                                    dialog.dismiss();
+                                                                }
+                                                            });
+                                                            builder.show();
+
+                                                        }
+                                                        else
+                                                            VehicleAttackPopup.Show(weaponLayout.getContext(), (VehicleFighter)((SWListBoxItem)items.getItem(which)).getTag(), Gunner.baseNPC, wp, new VehicleAttackPopup.onAttackListener() {
+                                                                @Override
+                                                                public void onSuccessfullAttack(int RealDamage) {
+                                                                    VehiculeFighterDamagePopup.Show(btnDamage.getContext(), (VehicleFighter)((SWListBoxItem)items.getItem(which)).getTag(), RealDamage, new VehiculeFighterDamagePopup.onValidatePopupListener() {
+                                                                        @Override
+                                                                        public void onValidatePopup() {
+                                                                            wp.setUsed(true);
+                                                                            VehicleFighterAdapter.this.FinalNotifyDataSetChanged();
+
+                                                                        }
+                                                                    });
+                                                                }
+
+                                                                @Override
+                                                                public void onUnsuccessfullAttack() {
+                                                                    wp.setUsed(true);
+                                                                    VehicleFighterAdapter.this.FinalNotifyDataSetChanged();
+                                                                }
+                                                            });
                                                     }
                                                 })
                                                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

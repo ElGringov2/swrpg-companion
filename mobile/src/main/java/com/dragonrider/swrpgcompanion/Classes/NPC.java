@@ -256,15 +256,20 @@ public class NPC {
 
 
     public RollResult getSkillRoll(Skill.Skills SkillID, int Seed) {
+
+        return getSkillRoll(SkillID, Seed, 2);
+
+    }
+
+
+	public RollResult getSkillRoll(Skill.Skills SkillID, int Seed, int BaseDifficulty) {
         Skill sk = GetSkill(SkillID.ordinal());
         int charac = Characteristics.get(sk.CharacteristicID);
 
         RollResult rr = new RollResult(Seed, charac, sk.Value);
 
-        rr.IncreaseNegativePool(2);
+        rr.IncreaseNegativePool(BaseDifficulty);
 
         return rr;
-
     }
-    
 }

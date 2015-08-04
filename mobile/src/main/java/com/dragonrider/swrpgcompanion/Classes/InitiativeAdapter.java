@@ -48,15 +48,17 @@ public class InitiativeAdapter<T> extends RecyclerView.Adapter<InitiativeAdapter
         else {
             this.mSlots = new ArrayList<>();
             this.mObjects = new ArrayList<>();
+            for (int i = 0; i < items.size(); i++) {
+                this.mObjects.add(null);
+            }
 
             if (items.get(0) instanceof CrewWrapper)
                 for(T wrapper : items)
                 {
                     mSlots.add(((CrewWrapper)wrapper).isOnPlayerSlot ? 1 : 0);
                     if (((CrewWrapper)wrapper).Played != -1)
-                        mObjects.add(wrapper);
-                    else
-                        mObjects.add(null);
+                        mObjects.add(((CrewWrapper)wrapper).Played, wrapper);
+
 
                 }
         }
@@ -129,10 +131,11 @@ public class InitiativeAdapter<T> extends RecyclerView.Adapter<InitiativeAdapter
         int value = (int)(64 * App.getContext().getResources().getDisplayMetrics().density);
 
         holder.imageView.setLayoutParams(new RecyclerView.LayoutParams(value, value));
-
+        holder.imageView.setImageBitmap(null);
+        holder.imageView.setBackground(null);
 
         if (mObjects.get(position) == null) {
-            holder.imageView.setImageBitmap(null);
+
             if (mSlots.get(position) == 1)
                 holder.imageView.setBackgroundResource(R.drawable.playeradd);
             else

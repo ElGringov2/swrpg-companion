@@ -355,6 +355,9 @@ public class VehicleFighter {
     }
 
 
+
+
+
     @Override
     public String toString() {
         return String.format("%s (%s)\n[Coque %d Stress %d] [ARM %d BOU %d MOT %d]",
@@ -365,5 +368,39 @@ public class VehicleFighter {
                 this.getActualWeaponsEnergy(),
                 this.getActualShieldEnergy(),
                 this.getActualEngineEnergy());
+    }
+
+
+    public VehicleFighter Clone() {
+        VehicleFighter clone = new VehicleFighter(this.baseVehicle);
+
+        clone.ActualDefenseAft = this.ActualDefenseAft;
+        clone.ActualDefenseFore = this.ActualDefenseFore;
+        clone.ActualDefensePort = this.ActualDefensePort;
+        clone.ActualDefenseStarboard = this.ActualDefenseStarboard;
+        clone.ActualEngineEnergy = this.ActualEngineEnergy;
+        clone.ActualShieldEnergy = this.ActualShieldEnergy;
+        clone.ActualWeaponsEnergy = this.ActualWeaponsEnergy;
+
+        clone.ActualSystemStrain = this.ActualSystemStrain;
+        clone.ActualHullTrauma = this.ActualHullTrauma;
+
+        for (CrewWrapper wrapper : getCrew()) {
+            if (!wrapper.isPlayer)
+            {
+                CrewWrapper cloneWrapper = clone.addCrew(wrapper.baseNPC, false);
+
+                RollResult rr = wrapper.baseNPC.getSkillRoll(Skill.Skills.cool);
+
+                cloneWrapper.initiative = new Initiative();
+                cloneWrapper.initiative.Advantages = rr.Advantage();
+                cloneWrapper.initiative.Success = rr.Succcess();
+                cloneWrapper.initiative.Triumph = rr.Triumph();
+
+
+            }
+        }
+
+        return clone;
     }
 }

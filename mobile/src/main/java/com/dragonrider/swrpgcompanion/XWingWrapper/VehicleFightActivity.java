@@ -115,9 +115,7 @@ public class VehicleFightActivity extends Activity {
         adapter.EnergyStep(this);
     }
 
-    public void mnuInit_Click(MenuItem v) {
 
-    }
 
     public void mnuNextRound_Click(MenuItem v) {
         adapter.NextRound();
