@@ -14,7 +14,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 
 import com.dragonrider.swrpgcompanion.Classes.GroundFightScene;
+import com.dragonrider.swrpgcompanion.Classes.GroundFighter;
+import com.dragonrider.swrpgcompanion.Classes.NPC;
 import com.dragonrider.swrpgcompanion.R;
+
+import java.util.ArrayList;
 
 public class GroundFightMultiPanelActivity extends FragmentActivity {
 
@@ -92,10 +96,10 @@ public class GroundFightMultiPanelActivity extends FragmentActivity {
 
 
 
-        if (getIntent().getExtras().getBoolean(ADDPLAYER)) {
-            Intent intent = new Intent(this, StartGroundFightActivity.class);
-            startActivity(intent);
-        }
+//        if (getIntent().getExtras().getBoolean(ADDPLAYER)) {
+//            Intent intent = new Intent(this, StartGroundFightActivity.class);
+//            startActivity(intent);
+//        }
 
         mPager = (ViewPager) findViewById(R.id.pager);
         adapter = new CustomPagerAdapter(getSupportFragmentManager());
@@ -148,6 +152,36 @@ public class GroundFightMultiPanelActivity extends FragmentActivity {
         if (id == R.id.GroundFightMenu_NextRound) {
             GroundFightScene.NextRound();
             GroundFightScene.MainAdapter.notifyDataSetChanged();
+
+            return true;
+        }
+        if (id == R.id.GroundFightMenu_AddPlayer) {
+            SelectPlayerPopup.Show(this, GroundFightScene.Players, new SelectPlayerPopup.IOnValidatePlayerAddPopup() {
+                @Override
+                public void OnSelectPlayer(NPC Player) {
+                    GroundFighter fighter = new GroundFighter(1);
+                    fighter.setBase(Player);
+                    fighter.isPlayer = true;
+                    GroundFightScene.AddFighter(fighter);
+                }
+            });
+            return true;
+        }
+        if (id == R.id.GroundFightMenu_AddPlayers) {
+
+            ArrayList<GroundFighter> fighterArrayList = new ArrayList<>();
+
+            for(NPC Player : GroundFightScene.Players)
+            {
+                GroundFighter fighter = new GroundFighter(1);
+                fighter.setBase(Player);
+                fighter.isPlayer = true;
+                fighterArrayList.add(fighter);
+
+            }
+
+            for (GroundFighter fighter : fighterArrayList)
+                GroundFightScene.AddFighter(fighter);
 
             return true;
         }

@@ -171,6 +171,7 @@ public class MainActivity extends Activity {
                         VehicleFightActivity.ClearFight();
                         Intent intent = new Intent(MainActivity.this, VehicleFightActivity.class);
                         startActivity(intent);
+
                     }
                 }));
         adapter.addMainMenuItem("XWing", new MainMenuItem()

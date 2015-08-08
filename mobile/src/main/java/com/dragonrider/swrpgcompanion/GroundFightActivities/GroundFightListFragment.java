@@ -4,6 +4,8 @@ package com.dragonrider.swrpgcompanion.GroundFightActivities;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,9 +31,16 @@ public class GroundFightListFragment extends Fragment {
 
         MainView = inflater.inflate(R.layout.fragment_ground_fight_list, container, false);
 
-        ListView mainList = (ListView)MainView.findViewById(R.id.GroundFightActivyty_MainList);
-
+        RecyclerView mainList = (RecyclerView)MainView.findViewById(R.id.GroundFightActivyty_MainList);
         mainList.setAdapter(GroundFightScene.MainAdapter);
+        mainList.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+
+
+        RecyclerView rinit = ((RecyclerView)MainView.findViewById(R.id.init));
+        rinit.setAdapter(GroundFightScene.getInitiativeAdapter());
+        rinit.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false));
+
+
 
 
         return MainView;

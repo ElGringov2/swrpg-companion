@@ -1,18 +1,27 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#EEEEEE"
+    android:orientation="vertical"
     tools:context="com.dragonrider.swrpgcompanion.GroundFightActivities.GroundFightListFragment">
 
-    <ListView
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/init"
+        android:padding="2dp"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"/>
+
+    <android.support.v7.widget.RecyclerView
         android:id="@+id/GroundFightActivyty_MainList"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
+        android:layout_weight="1"
         android:layout_margin="10dp"
         android:textColor="@android:color/black"
         android:dividerHeight="0dp"
         android:divider="@android:color/transparent">
-    </ListView>
+    </android.support.v7.widget.RecyclerView>
 
-</FrameLayout>
+</LinearLayout>

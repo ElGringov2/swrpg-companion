@@ -19,18 +19,23 @@
     <string name="next_round">Nouveau Round</string>
     <string name="encounter">Rencontre&#8230;</string>
     <string name="action_force_power">Pouvoir de la Force</string>
-    <string name="name_add_to_fight" formated="false" >%s ajoué au combat.</string>
+    <string name="name_add_to_fight" formatted="false" >%s ajoué au combat.</string>
     <string name="none">Aucune</string>
     <string name="swap_action_maneuver">Echange contre une manoeuvre (2eme gratuite)</string>
     <string name="special_abilities">Capacité spéciale</string>
     <string name="skill">Compétence</string>
     <string name="action_attack_on">Attaque sur </string>
-    <string name="critical_autokill_minion">Une blessure critique tue automatiquement un larbin.</string>
+    <string name="critical_autokill_minion" formatted="false">Une blessure critique tue automatiquement %d larbin%s.</string>
     <string name="delete_encounter_question">Voulez-vous supprimer la rencontre?</string>
     <string name="encounter_name">Nom de la rencontre</string>
     <string name="encounter_location">Emplacement de la rencontre</string>
     <string name="encounter_campaign">Campagne</string>
     <string name="encounter_adventure">Aventure</string>
+    <string name="set_as_ally">Définir comme allié</string>
+    <string name="set_as_ennemy">Définir comme ennemi</string>
+    <string name="pierce">Pierce</string>
+    <string name="remove_dead_player">Supprimer un personnage à terre</string>
+    <string name="remove_dead_player_question">Supprimer le personnage à terre du combat?</string>
 
 
 </resources>

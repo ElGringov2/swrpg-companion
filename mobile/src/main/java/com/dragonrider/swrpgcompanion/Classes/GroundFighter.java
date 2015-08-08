@@ -1,8 +1,5 @@
 package com.dragonrider.swrpgcompanion.Classes;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -10,20 +7,25 @@ import android.content.DialogInterface.OnClickListener;
 import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.BaseAdapter;
-import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.SeekBar;
 import android.widget.TextView;
 
-import com.dragonrider.swrpgcompanion.R;
 import com.dragonrider.swrpgcompanion.Classes.NPC.NPCTypes;
+import com.dragonrider.swrpgcompanion.GroundFightActivities.GroundFighterAdapter;
+import com.dragonrider.swrpgcompanion.R;
+import com.dragonrider.swrpgcompanion.XWingWrapper.Initiative;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class GroundFighter {
 
 	public boolean IsActive = false;
 	public String id;
 	public int ActualWounds;
+    private boolean ally = false;
 
     public GroundFighter setActualWounds(int Wounds) {
         this.ActualWounds = Wounds;
@@ -84,8 +86,8 @@ public class GroundFighter {
 		LastManeuver = lastManeuver;
 	}
 	
-	public List<String> Attacks = new ArrayList<String>();
-    public List<String> Defends = new ArrayList<String>();
+	public List<String> Attacks = new ArrayList<>();
+    public List<String> Defends = new ArrayList<>();
 
     public void addAttack(String name) {
         Attacks.add(name);
@@ -119,53 +121,41 @@ public class GroundFighter {
 	public Boolean isDefensive = false;
 	public Boolean isProne = false;
 	public Boolean isCover = false;
+
+	private Initiative mainInitiative = new Initiative();
 	
-	private int mainInitiative = -1;
-	private int initiative = -1;
-	private int subInitiative = -1;
-	
-	public int getMainInitiative() {
-		if (mainInitiative == -1)
-			return InitiativeRoll.Triumph();
+	public Initiative getMainInitiative() {
 		return mainInitiative;
 	}
-	public void setMainInitiative(int mainInitiative) {
-		this.mainInitiative = mainInitiative;
-	}
+
+
+    public void setMainInitiative(int Triumph, int Success, int Advantage) {
+        this.mainInitiative.Triumph = Triumph;
+        this.mainInitiative.Success = Success;
+        this.mainInitiative.Advantages = Advantage;
+
+    }
 	
-	public void setInitiative(int Initiative){
-		this.initiative = Initiative;
-	}
-	public int getInitiative(){
-		if (initiative == -1) return InitiativeRoll.Succcess();
-		return initiative;
-	}
-	public void setSubinitiative(int Initiative){
-		this.subInitiative = Initiative;
-	}
-	public int getSubinitiative(){
-		if (subInitiative == -1) return InitiativeRoll.Advantage();
-		return subInitiative;
-	}
+
 	
 	public void setInitiativeRoll(RollResult initiativeRoll) {
-		InitiativeRoll = initiativeRoll;
-		this.mainInitiative = -1;
-		this.initiative = -1;
-		this.subInitiative = -1;
+        this.mainInitiative.Triumph = initiativeRoll.Triumph();
+        this.mainInitiative.Success = initiativeRoll.Succcess();
+        this.mainInitiative.Advantages = initiativeRoll.Advantage();
 	}
 	
-	public RollResult InitiativeRoll = new RollResult();
+
 	
-	public Boolean Played = false;
+	public int Played = -1;
 	
-	public List<CriticalInjury> Criticals = new ArrayList<CriticalInjury>();
+	public List<CriticalInjury> Criticals = new ArrayList<>();
 
 
     
 	
 	public GroundFighter(int PlayerCount) {
 		playerCount = PlayerCount;
+
 	}
 
 
@@ -175,7 +165,7 @@ public class GroundFighter {
 		if (Base.Type.equals(NPCTypes.Minion)) sReturn = String.valueOf(getCount()) + "x";
 		sReturn += Base.Name + "\nW" + ActualWounds + "/" + TotalWounds + ", S" + ActualStrain + "/" + TotalStrain;
 		String sThirdLine = "";
-		if (Played) sThirdLine += App.getContext().getString(R.string.fightstatus_played);
+		if (Played >= 0) sThirdLine += App.getContext().getString(R.string.fightstatus_played);
 		if (isProne) sThirdLine += (sThirdLine.equals("") ? "" : " - ") + App.getContext().getString(R.string.fightstatus_prone);
 		if (isCover) sThirdLine += (sThirdLine.equals("") ? "" : " - ") + App.getContext().getString(R.string.fightstatus_cover);
 		if (isDefensive) sThirdLine += (sThirdLine.equals("") ? "" : " - ") + App.getContext().getString(R.string.fightstatus_defensive);
@@ -225,6 +215,10 @@ public class GroundFighter {
 	}
 	
 	public int getCount() {
+
+        if (isPlayer)
+            return 1;
+
 		if (ActualWounds >= TotalWounds)
 			return 0;
 		
@@ -278,7 +272,7 @@ public class GroundFighter {
 	
 
     public List<String> GetPossibleManeuvers () {
-        List<String> lst = new ArrayList<String>();
+        List<String> lst = new ArrayList<>();
         lst.add(App.getContext().getString(R.string.none));
         if (aimingBonus <= 1) lst.add(App.getContext().getString(R.string.action_aim_plusoneboost) + "#" + App.getContext().getString(R.string.action_desc_aim_plusoneboost));
         lst.add(App.getContext().getString(R.string.action_assist) + "#" + App.getContext().getString(R.string.action_desc_assist));
@@ -316,7 +310,7 @@ public class GroundFighter {
     public List<String> GetPossibleActions(List<String> PlayerNames, Context context)
     {
 
-        List<String> lst = new ArrayList<String>();
+        List<String> lst = new ArrayList<>();
         lst.add(context.getString(R.string.none));
         lst.add(context.getString(R.string.swap_action_maneuver));
         lst.add(context.getString(R.string.special_abilities));
@@ -354,105 +348,77 @@ public class GroundFighter {
 		this.Color = colors[iId];
 	}
 	
-
-
-    private List<String> getAllFormattedDamageText() {
-        ArrayList<String> list = new ArrayList<>();
-        for (int i = getBase().Soak; i < TotalWounds + getBase().Soak - ActualWounds + 1; i++)
-            list.add(formatDamageText(i));
-
-        return list;
-
-    }
-
-
-    private String formatDamageText(int Damage) {
-
-        int TotalSoak = getBase().Soak;
-        int ArmorSoak = getBase().Soak - getBase().Characteristics.get(0);
-
-
-        String sReturn = String.format("%d", Damage);
-
-
-
-        if (Damage <= TotalSoak) {
-            sReturn += " ou moins: pas de dégâts.";
-            return sReturn;
-        }
-
-        if (Damage - TotalSoak >= (TotalWounds - ActualWounds)) {
-            sReturn += " ou plus: Mort.";
-            return sReturn;
-        }
-
-        sReturn += ": " + String.valueOf(Damage - TotalSoak) + " dégâts (";
-        for (int iIgnoreArmor = 1; iIgnoreArmor <= ArmorSoak; iIgnoreArmor++) {
-            if (Damage - (TotalSoak - iIgnoreArmor) >= (TotalWounds - ActualWounds))
-                sReturn += String.format("mort avec Pierce %s, ", iIgnoreArmor);
-            else {
-                sReturn += String.format("%d avec Pierce %d, ", Damage - (TotalSoak - iIgnoreArmor), iIgnoreArmor);
-
-                if (getBase().Type == NPCTypes.Minion)
-                    sReturn += String.format("reste %d larbins, ",
-                            (int) Math.ceil((((double) TotalWounds - (double) (ActualWounds + Damage - TotalSoak)) / (double) TotalWounds) * playerCount));
-
-
-            }
-
-
-        }
-
-        sReturn = (sReturn + "!!!").replace(", !!!", ")").replace("!!!", ")");
-
-
-        return sReturn;
-
-
-    }
+//
+//    private List<String> getAllFormattedDamageText() {
+//        ArrayList<String> list = new ArrayList<>();
+//        for (int i = getBase().Soak; i < TotalWounds + getBase().Soak - ActualWounds + 1; i++)
+//            list.add(formatDamageText(i));
+//
+//        return list;
+//
+//    }
+//
+//
+//    private String formatDamageText(int Damage) {
+//
+//        int TotalSoak = getBase().Soak;
+//        int ArmorSoak = getBase().Soak - getBase().Characteristics.get(0);
+//
+//
+//        String sReturn = String.format("%d", Damage);
+//
+//
+//
+//        if (Damage <= TotalSoak) {
+//            sReturn += " ou moins: pas de dégâts.";
+//            return sReturn;
+//        }
+//
+//        if (Damage - TotalSoak >= (TotalWounds - ActualWounds)) {
+//            sReturn += " ou plus: Mort.";
+//            return sReturn;
+//        }
+//
+//        sReturn += ": " + String.valueOf(Damage - TotalSoak) + " dégâts (";
+//        for (int iIgnoreArmor = 1; iIgnoreArmor <= ArmorSoak; iIgnoreArmor++) {
+//            if (Damage - (TotalSoak - iIgnoreArmor) >= (TotalWounds - ActualWounds))
+//                sReturn += String.format("mort avec Pierce %s, ", iIgnoreArmor);
+//            else {
+//                sReturn += String.format("%d avec Pierce %d, ", Damage - (TotalSoak - iIgnoreArmor), iIgnoreArmor);
+//
+//                if (getBase().Type == NPCTypes.Minion)
+//                    sReturn += String.format("reste %d larbins, ",
+//                            (int) Math.ceil((((double) TotalWounds - (double) (ActualWounds + Damage - TotalSoak)) / (double) TotalWounds) * playerCount));
+//
+//
+//            }
+//
+//
+//        }
+//
+//        sReturn = (sReturn + "!!!").replace(", !!!", ")").replace("!!!", ")");
+//
+//
+//        return sReturn;
+//
+//
+//    }
+//
 
 	
-	
-	public void DamageUI(final Context context, final BaseAdapter parentAdapter) {
+	public void DamageUI(final Context context, final GroundFighterAdapter parentAdapter, final GenericEditor.IOnPopupClosed onPopupClosed) {
 
-        List<String> strings = getAllFormattedDamageText();
+        //List<String> strings = getAllFormattedDamageText();
 
-//
-//
-//		List<String> strings = new ArrayList<>();
-//
-//		int iMinDamage = getBase().Soak;
-//		int iArmorSoak = getBase().Soak - getBase().Characteristics.get(0);
-//		strings.add(String.format("%d ou moins (%d sans armure): pas de dégâts", iMinDamage, iMinDamage - iArmorSoak));
-//		int iMaxDamage = TotalWounds - ActualWounds  + getBase().Soak;
-//
-//		for (int i = iMinDamage + 1; i < iMaxDamage; i++ ) {
-//			if (getBase().Type == NPCTypes.Minion){
-//				android.util.Log.d("hopla", String.valueOf((((double)TotalWounds - (double)(ActualWounds + i - getBase().Soak)) / (double)TotalWounds) * (double)playerCount));
-//
-//				int iCount =  (int) Math.ceil((((double)TotalWounds - (double)(ActualWounds + i - getBase().Soak)) / (double)TotalWounds) * playerCount);
-//                String damagetText = String.valueOf(i);
-//
-//                for (int iSoak = iArmorSoak; iSoak > 0; iSoak++)
-//                    damagetText += "";
-//				strings.add(String.format("%d (%d sans armure), reste %d", i, i - iArmorSoak, iCount));
-//			}
-//			else
-//				strings.add(String.format("%d (%d sans armure)", i, i - iArmorSoak));
-//
-//		}
-//
-//		strings.add(String.format("%d ou plus (%d sans armure), élimination", iMaxDamage, iMaxDamage - iArmorSoak));
-//
-//
-		ArrayAdapter<String> adapter = new ArrayAdapter<> (context, android.R.layout.simple_dropdown_item_1line, strings);
+
+		//ArrayAdapter<String> adapter = new ArrayAdapter<> (context, android.R.layout.simple_dropdown_item_1line, strings);
 		
 		
 		
 		View baseView = LayoutInflater.from(context).inflate(R.layout.popup_damage_groundfighter, null);
 		
-		ListView lv =  (ListView) baseView.findViewById(R.id.popupDamageGroundFighterMainList);
-		lv.setAdapter(adapter);
+		//ListView lv =  (ListView) baseView.findViewById(R.id.popupDamageGroundFighterMainList);
+		//lv.setAdapter(adapter);
 		
 		
 		
@@ -495,82 +461,223 @@ public class GroundFighter {
 		text += "\nExtrème:" + diffRoll.toSymbolFormattableString();
 		
 		Util.setTextViewSymbols(tview, text);
+
+
+        final TextView resultTextView = (TextView)baseView.findViewById(R.id.textView1);
+        final TextView damageTextView = (TextView)baseView.findViewById(R.id.txtDamage);
+
+        final int brawnSoak = this.getBase().Characteristics.get(Characteristic.Characteristics.Brawn.ordinal());
+
+        final int armorSoak = this.getBase().Soak - brawnSoak;
+
+        final int meleeLightSaber = this.getBase().getTalent(Talent.TalentIDs.parry) + 2;
+
+        final int rangedLightSaber = this.getBase().getTalent(Talent.TalentIDs.reflect) + 2;
+
+
+        final SeekBar damageSeekBar = (SeekBar) baseView.findViewById(R.id.seekBar1);
+
+        final RadioButton rdoBreach1 = (RadioButton) baseView.findViewById(R.id.rdoBreach2);
+        final RadioButton rdoBreach2 = (RadioButton) baseView.findViewById(R.id.rdoBreach3);
+
+        final RadioButton rdoPierce1 = (RadioButton) baseView.findViewById(R.id.rdoPierce2);
+        final RadioButton rdoPierce2 = (RadioButton) baseView.findViewById(R.id.rdoPierce3);
+        final RadioButton rdoPierce3 = (RadioButton) baseView.findViewById(R.id.rdoPierce4);
+        final RadioButton rdoPierce4 = (RadioButton) baseView.findViewById(R.id.rdoPierce5);
+
+        final RadioButton rdoCritical1 = (RadioButton) baseView.findViewById(R.id.rdoCritical2);
+        final RadioButton rdoCritical2 = (RadioButton) baseView.findViewById(R.id.rdoCritical3);
+        final RadioButton rdoCritical3 = (RadioButton) baseView.findViewById(R.id.rdoCritical4);
+        final RadioButton rdoCritical4 = (RadioButton) baseView.findViewById(R.id.rdoCritical5);
+
+        damageSeekBar.setMax(30);
+        damageSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+
+                int finalSoak = armorSoak -
+                        (rdoBreach1.isChecked() ? 10 : 0) -
+                        (rdoBreach2.isChecked() ? 20 : 0) -
+                        (rdoPierce1.isChecked() ? 1 : 0) -
+                        (rdoPierce2.isChecked() ? 1 : 0) -
+                        (rdoPierce3.isChecked() ? 1 : 0) -
+                        (rdoPierce4.isChecked() ? 1 : 0);
+                if (finalSoak < 0) finalSoak = 0;
+
+
+                int finalMeleeDamage = progress - finalSoak - meleeLightSaber;
+                if (finalMeleeDamage < 0) finalMeleeDamage = 0;
+
+                int finalRangedDamage = progress - finalSoak - rangedLightSaber;
+                if (finalRangedDamage < 0) finalRangedDamage = 0;
+
+                String meleeDamageText = String.valueOf(finalMeleeDamage);
+                if (finalMeleeDamage == 0) meleeDamageText = "Aucun dégâts.";
+                if (finalMeleeDamage + ActualWounds >= TotalWounds) meleeDamageText = "A terre.";
+
+                String rangedDamageText = String.valueOf(finalRangedDamage);
+                if (finalRangedDamage == 0) rangedDamageText = "Aucun dégâts.";
+                if (finalRangedDamage + ActualWounds >= TotalWounds) rangedDamageText = "A terre.";
+
+                damageTextView.setText(String.valueOf(progress));
+
+                resultTextView.setText(String.format("Mélée: %s\nDistance: %s", meleeDamageText, rangedDamageText));
+                rdoBreach1.setTag(finalMeleeDamage);
+                rdoPierce1.setTag(finalRangedDamage);
+
+
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
+        damageSeekBar.setProgress(0);
+
 		
-		final AlertDialog dialog = new AlertDialog.Builder(context)
+		new AlertDialog.Builder(context)
 		.setTitle("Infliger des dégâts")
 		.setView(baseView)
 		.setNegativeButton(R.string.cancel, new OnClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				dialog.cancel();
-				
-			}
-		})
-		.show();
-		
-		lv.setOnItemClickListener(new OnItemClickListener() {
 
-			@Override
-			public void onItemClick(AdapterView<?> parent, View view,
-					int position, long id) {
-				int oldValue = getCount();
-				ActualWounds += position;
-				int newValue = getCount();
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
 
-				dialog.dismiss();
-				
-				if (newValue== 0) {
-					new AlertDialog.Builder(context)
-					.setTitle("Infliger des dégâts")
-					.setMessage("Eliminé")
-					.setPositiveButton(R.string.ok, new OnClickListener() {
-								
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.dismiss();
-							
-						}
-					})
-					.show();
+                dialog.cancel();
+
+            }
+        })
+		.setPositiveButton(R.string.rangeddefense, new OnClickListener() {
+            @Override
+            public void onClick(final DialogInterface dialog, int which) {
+                int Damage = (int) rdoPierce1.getTag();
+
+                int Critical = (rdoCritical1.isChecked() ? 1 : 0) +
+                        (rdoCritical2.isChecked() ? 2 : 0) +
+                        (rdoCritical3.isChecked() ? 3 : 0) +
+                        (rdoCritical4.isChecked() ? 4 : 0);
+
+                applyDamage(Damage, Critical, context, new GenericEditor.IOnPopupClosed() {
+                    @Override
+                    public void OnClosed() {
+                        if (onPopupClosed != null) onPopupClosed.OnClosed();
+                        parentAdapter.notifyDataSetChanged();
+                    }
+                });
 
 
-				}
-				else if (oldValue != newValue) {
-					new AlertDialog.Builder(context)
-					.setTitle("Infliger des dégâts")
-					.setMessage(String.format("%d mort%s", 
-							oldValue - newValue,
-							oldValue - newValue > 1 ? "s": ""))
-					.setPositiveButton(R.string.ok, new OnClickListener() {
-								
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.dismiss();
-							
-						}
-					})
-					.show();
-				}
+                dialog.dismiss();
 
-				parentAdapter.notifyDataSetChanged();
-				
-			}
-		});
+
+            }
+        }).setNeutralButton(R.string.meleedefense, new OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                int Damage =  (int) rdoBreach1.getTag();
+
+                int Critical = (rdoCritical1.isChecked() ? 1 : 0) +
+                        (rdoCritical2.isChecked() ? 2 : 0) +
+                        (rdoCritical3.isChecked() ? 3 : 0) +
+                        (rdoCritical4.isChecked() ? 4 : 0);
+
+                applyDamage(Damage, Critical, context, new GenericEditor.IOnPopupClosed() {
+                    @Override
+                    public void OnClosed() {
+                        if (onPopupClosed != null) onPopupClosed.OnClosed();
+                        parentAdapter.notifyDataSetChanged();
+                    }
+                });
+
+
+                dialog.dismiss();
+
+            }
+        }).show();
 		
 				
 	}
 
-	public void CriticalUI(Context context) {
+    private void applyDamage(final int damage, int critical, final Context context, final GenericEditor.IOnPopupClosed onPopupClosed) {
+
+
+        if (critical > 0) {
+            CriticalUI(context, critical, new GenericEditor.IOnPopupClosed() {
+                @Override
+                public void OnClosed() {
+                    applyDamage(damage, 0, context, onPopupClosed);
+                }
+            });
+            return;
+        }
+
+
+        int oldValue = getCount();
+
+        ActualWounds += damage;
+
+
+
+        if (getCount() == 0) {
+            new AlertDialog.Builder(context)
+            .setTitle("Infliger des dégâts")
+            .setMessage("Eliminé")
+            .setPositiveButton(R.string.ok, new OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (onPopupClosed != null) onPopupClosed.OnClosed();
+                    dialog.dismiss();
+
+                }
+            })
+            .show();
+
+
+        }
+        else if (oldValue != getCount()) {
+            new AlertDialog.Builder(context)
+            .setTitle("Infliger des dégâts")
+            .setMessage(String.format("%d mort%s",
+                    oldValue - getCount(),
+                    oldValue - getCount() > 1 ? "s" : ""))
+            .setPositiveButton(R.string.ok, new OnClickListener() {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    if (onPopupClosed != null) onPopupClosed.OnClosed();
+                    dialog.dismiss();
+
+                }
+            })
+            .show();
+        }
+
+
+    }
+
+    public void CriticalUI(Context context, GenericEditor.IOnPopupClosed onPopupClosed) {
+        CriticalUI(context, 1, onPopupClosed);
+    }
+
+	public void CriticalUI(Context context, final int CriticalCount, final GenericEditor.IOnPopupClosed onPopupClosed) {
         final AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
         if (Base.Type == NPCTypes.Minion) {
-            builder.setMessage(R.string.critical_autokill_minion);
+            builder.setMessage(String.format(context.getString(R.string.critical_autokill_minion), CriticalCount, CriticalCount > 1 ? "s" : ""));
             builder.setTitle(R.string.weapon_critical);
             builder.setPositiveButton(R.string.ok, new OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialogInterface, int i) {
-                    ActualWounds += Base.TotalWounds;
+                    ActualWounds += Base.TotalWounds * CriticalCount;
+                    if (onPopupClosed != null) onPopupClosed.OnClosed();
                 }
             });
             builder.setNegativeButton(R.string.cancel, new OnClickListener() {
@@ -585,8 +692,9 @@ public class GroundFighter {
         }
 
         int _criticals = this.Criticals.size() * 10;
-        final List<String> lst1 = new ArrayList<String>();
-        List<String> lst2 = new ArrayList<String>();
+        if (CriticalCount > 1) _criticals += (CriticalCount - 1) * 10;
+        final List<String> lst1 = new ArrayList<>();
+        List<String> lst2 = new ArrayList<>();
 
         for (int i = _criticals; i <= 151; i++) {
             String crit = CriticalInjury.getCriticalName(i);
@@ -598,12 +706,12 @@ public class GroundFighter {
             }
         }
 
-        builder.setAdapter(new ArrayAdapter<String>(context, android.R.layout.simple_list_item_1, lst2), new OnClickListener() {
+        builder.setAdapter(new ArrayAdapter<>(context, android.R.layout.simple_list_item_1, lst2), new OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 CriticalInjury criticalInjury = new CriticalInjury(CriticalInjury.CriticalIDs.values()[i]);
                 Criticals.add(criticalInjury);
-
+                if (onPopupClosed != null) onPopupClosed.OnClosed();
             }
         });
 
@@ -690,4 +798,11 @@ public class GroundFighter {
         this.Name = name;
     }
 
+    public boolean isAlly() {
+        return ally;
+    }
+
+    public void setAlly(boolean ally) {
+        this.ally = ally;
+    }
 }

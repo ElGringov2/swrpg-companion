@@ -5,4 +5,7 @@
         />
     <item android:id="@+id/mnuDuplicate"
         android:title="@string/duplicate"/>
+
+    <item android:id="@+id/mnuEdit"
+        android:title="@string/edit"/>
 </menu>

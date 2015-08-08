@@ -3,6 +3,7 @@ package com.dragonrider.swrpgcompanion.XWingWrapper;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Environment;
 import android.widget.PopupMenu ;
 import android.support.v7.widget.RecyclerView;
@@ -25,6 +26,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.dragonrider.swrpgcompanion.Classes.App;
+import com.dragonrider.swrpgcompanion.Classes.GenericEditor;
 import com.dragonrider.swrpgcompanion.Classes.InitiativeAdapter;
 import com.dragonrider.swrpgcompanion.Classes.NPC;
 import com.dragonrider.swrpgcompanion.Classes.RollResult;
@@ -76,14 +78,17 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
     //Liste des véhicules
     private List<VehicleFighter> Fighters;
 
+    private Context mContext;
+
     /**
      * Constructeur
      * @param fighters La liste des véhicules impliqué
      */
-    public VehicleFighterAdapter(List<VehicleFighter> fighters) {
+    public VehicleFighterAdapter(Context pContext, List<VehicleFighter> fighters) {
 
         Fighters = fighters;
         Players = XmlImport.ImportPCs();
+        mContext = pContext;
     }
 
 
@@ -605,6 +610,19 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
 
                                 return true;
                             }
+                            else if (menuItem.getItemId() == R.id.mnuEdit)
+                            {
+                                GenericEditor.Show(mContext, Fighters.get(FighterID), new GenericEditor.IOnPopupClosed() {
+                                    @Override
+                                    public void OnClosed() {
+
+                                        FinalNotifyDataSetChanged();
+                                    }
+                                });
+
+
+
+                            }
 
 
                             return false;
@@ -763,7 +781,7 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
                             @Override
                             public void onValidatePopup(final Object Result) {
 
-                                InitiativePopup.Show(itemView.getContext(), new InitiativePopup.IOnValidateInitiative() {
+                                InitiativePopup.Show(itemView.getContext(), ((NPC)Result).Name, new InitiativePopup.IOnValidateInitiative() {
                                     @Override
                                     public void OnValidate(int Triumph, int Success, int Advantage) {
                                         CrewWrapper wrapper = Fighters.get(FighterID).addCrew((NPC) Result, true);

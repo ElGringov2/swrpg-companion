@@ -3,6 +3,7 @@ package com.dragonrider.swrpgcompanion.GroundFightActivities;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
@@ -10,7 +11,7 @@ import android.widget.ListView;
 import com.dragonrider.swrpgcompanion.R;
 import com.dragonrider.swrpgcompanion.Classes.GroundFightScene;
 
-
+@Deprecated
 public class GroundFightActivity extends Activity {
 
 	
@@ -50,7 +51,10 @@ public class GroundFightActivity extends Activity {
 
 		ListView mainView = (ListView) findViewById(R.id.GroundFightActivyty_MainList);
 
-		mainView.setAdapter(GroundFightScene.MainAdapter);
+		//mainView.setAdapter(GroundFightScene.MainAdapter);
+
+
+        ((RecyclerView)findViewById(R.id.InitiativeRecyclerView)).setAdapter(GroundFightScene.getInitiativeAdapter());
 
 
 		

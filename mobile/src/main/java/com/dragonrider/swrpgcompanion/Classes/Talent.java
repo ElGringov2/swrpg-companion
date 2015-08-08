@@ -396,6 +396,7 @@ public class Talent {
             unrelenting_skeptic,
             unrelenting_skeptic_improved,
 
+
 	}
 
 	public static String GetTalentName(int id) {
@@ -484,7 +485,7 @@ public class Talent {
 		if (id == TalentIDs.defensive_stance.ordinal())
 			return "Defensive Stance";
 
-		if (id == TalentIDs.disorient.ordinal())
+        if (id == TalentIDs.disorient.ordinal())
 			return "Disorient";
 
 		if (id == TalentIDs.dodge.ordinal())

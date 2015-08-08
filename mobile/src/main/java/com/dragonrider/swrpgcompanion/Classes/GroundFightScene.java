@@ -6,86 +6,117 @@ import java.util.Comparator;
 import java.util.List;
 
 import android.content.Context;
+import android.support.v7.widget.RecyclerView;
 
+import com.dragonrider.swrpgcompanion.GroundFightActivities.GroundFighterAdapter;
 import com.dragonrider.swrpgcompanion.R;
 import com.dragonrider.swrpgcompanion.GroundFightActivities.GroundFightAttackResolver;
 import com.dragonrider.swrpgcompanion.GroundFightActivities.GroundFightForceResolver;
-import com.dragonrider.swrpgcompanion.GroundFightActivities.GroundFighterAdapter;
+import com.dragonrider.swrpgcompanion.XWingWrapper.InitiativePopup;
+
 
 public class GroundFightScene {
 	
 	public static GroundFighterAdapter MainAdapter;
 
+    // Un contexte
+    private static Context actualContext;
 
+    //Liste temporaire des joueurs pour eviter doublons
+    public static List<NPC> Players;
 	
-	public static List<GroundFighter> Fighters = new ArrayList<GroundFighter>();
+	public static List<GroundFighter> Fighters = new ArrayList<>();
 	
 	public static boolean isFoesSurprised = false;
 	
-	public static List<String> PlayerNames = new ArrayList<String>();
-	
+	public static List<String> PlayerNames = new ArrayList<>();
+
+
+	private static InitiativeAdapter<GroundFighter> initiativeAdapter;
+
 	public static List<GroundFighter> getFighters() {
 		    return MainAdapter.getFighters();
 	}
 
     public static boolean getIsFighting() {
-        if (MainAdapter == null || MainAdapter.getFighters() == null || MainAdapter.getFighters().size() == 0) return false;
-        return true;
-    }
-	
+		return !(MainAdapter == null || MainAdapter.getFighters() == null || MainAdapter.getFighters().size() == 0);
+	}
+
+
+
 	public static void RefreshContext(Context context) {
-		MainAdapter = new GroundFighterAdapter(context);
+		MainAdapter = new GroundFighterAdapter();
 		MainAdapter.setFighters(Fighters);
+        initiativeAdapter = new InitiativeAdapter<>(context);
+        initiativeAdapter.updateData(Fighters);
+
+        actualContext = context;
+
+
 		
 	}
 	
 	public static void Clear() {
-        PlayerFighterCount = 0;
-        PlayerNames = new ArrayList<String>();
-        Fighters = new ArrayList<GroundFighter>();
+
+        Players = XmlImport.ImportPCs();
+        PlayerNames.clear();
+        Fighters = new ArrayList<>();
 
 
     }
 
 
 	public static void Initialize(Context context) {
-	
+
         Clear();
 
-        MainAdapter = new GroundFighterAdapter(context);
-		MainAdapter.setFighters(Fighters);
-		
-		
+
+        RefreshContext(context);
 
 	
 	}
 	
-	static int PlayerFighterCount;
-	
-	public static void AddPlayerFighter(GroundFighter fighter) {
-		Fighters.add(fighter);
 
-		PlayerNames.add(fighter.Name);
-		
-		PlayerFighterCount++;
-		
-		ReorderFighters();
 
-		MainAdapter.notifyDataSetChanged();
-        FighterListChanged.RunWhenFighterListChanged();
+	public static InitiativeAdapter<GroundFighter> getInitiativeAdapter() {
+
+		return initiativeAdapter;
 	}
 
-    public interface INotifyFighterListChanged{
+	public interface INotifyFighterListChanged{
         void RunWhenFighterListChanged();
     }
     public static INotifyFighterListChanged FighterListChanged;
 
-    public static void AddFighter(GroundFighter groundFighter) {
-        int skillID = Skill.Skills.cool.ordinal();
-        if (isFoesSurprised)
-            skillID = Skill.Skills.vigilance.ordinal();
-        groundFighter.setInitiativeRoll(groundFighter.GetSkillRollResult(skillID));
+    public static void AddFighter(final GroundFighter groundFighter) {
 
+        if (groundFighter.isPlayer) {
+
+            InitiativePopup.Show(actualContext, groundFighter.Name, new InitiativePopup.IOnValidateInitiative() {
+                @Override
+                public void OnValidate(int Triumph, int Success, int Advantage) {
+                    groundFighter.setMainInitiative(Triumph, Success, Advantage);
+                }
+            });
+            PlayerNames.add(groundFighter.getFullName());
+            Players.remove(groundFighter.getBase());
+
+            for(GroundFighter fighter : Fighters) {
+                if (fighter.isPlayer || fighter.getBase().Type != NPC.NPCTypes.Minion)
+                    continue;
+
+                fighter.setPlayerCount(PlayerNames.size());
+
+            }
+            groundFighter.setAlly(true);
+
+        }
+        else {
+            int skillID = Skill.Skills.cool.ordinal();
+            if (isFoesSurprised)
+                skillID = Skill.Skills.vigilance.ordinal();
+            groundFighter.setInitiativeRoll(groundFighter.GetSkillRollResult(skillID));
+        }
 
 
 
@@ -103,39 +134,33 @@ public class GroundFightScene {
 
 
         Fighters.add(groundFighter);
-        android.util.Log.d("hopla", "Nouveau fighter:" + groundFighter.Name);
+        ReorderFighters();
+
+        MainAdapter.notifyDataSetChanged();
+        initiativeAdapter.updateData(Fighters);
+
+
     }
 	
 	private static void AddFighter(NPC baseNPC) {
 
-        GroundFighter fighter = new GroundFighter(PlayerFighterCount);
+
+
+        GroundFighter fighter = new GroundFighter(PlayerNames.size());
         fighter.setBase(baseNPC);
 
         AddFighter(fighter);
+
 
 
 	}
 	
 	
 	public static void AddFighter(NPC baseNPC, int Count) {
-		
-		int skillID = Skill.Skills.cool.ordinal();
-		if (isFoesSurprised)
-			skillID = Skill.Skills.vigilance.ordinal();
-			
-	   	 
-	   	for (int i = 0; i < Count; i++) {
-			GroundFighter fighter = new GroundFighter(PlayerFighterCount);
-			fighter.setBase(baseNPC);
 
-            AddFighter(fighter);
+	   	for (int i = 0; i < Count; i++)
+            AddFighter(baseNPC);
 
-	   		 
-	   	}
-	   	
-	   	ReorderFighters();
-	   	MainAdapter.notifyDataSetChanged();
-        FighterListChanged.RunWhenFighterListChanged();
 	}
 	
 	
@@ -143,27 +168,41 @@ public class GroundFightScene {
 		
 	   	 Database db = new Database(App.getContext());
 	   	 NPC base = db.GetNPCbyName(NPCName);
-	   	 
-   		 AddFighter(base, Count);
+
+        AddFighter(base, Count);
        
 	}
 	
-	
+
 	public static void ReorderFighters() {
-		
-		Collections.sort(Fighters, new Comparator<GroundFighter>() {
-	        @Override
-	        public int compare(GroundFighter s1, GroundFighter s2) {
-	        	int i1 = s1.getMainInitiative() * 1000 + s1.getInitiative() * 100 + s1.getSubinitiative() * 10 + (s1.isPlayer ? 1 : 0);
-	        	int i2 = s2.getMainInitiative() * 1000 + s2.getInitiative() * 100 + s2.getSubinitiative() * 10 + (s2.isPlayer ? 1 : 0);
-	        	if (i1 > i2) return -1;
-	        	if (i1 < i2) return 1;
-	        	return 0;
-	        }
-	        
-	    });
-		
-		
+
+
+        Collections.sort(Fighters, new Comparator<GroundFighter>() {
+            @Override
+            public int compare(GroundFighter lhs, GroundFighter rhs) {
+                int compareTo = ((Integer)lhs.getMainInitiative().Triumph).compareTo(rhs.getMainInitiative().Triumph);
+                if (compareTo != 0)
+                    return -compareTo;
+                compareTo = ((Integer)lhs.getMainInitiative().Success).compareTo(rhs.getMainInitiative().Success);
+                if (compareTo != 0)
+                    return -compareTo;
+                compareTo = -((Integer)lhs.getMainInitiative().Advantages).compareTo(rhs.getMainInitiative().Advantages);
+                if (compareTo != 0)
+                    return -compareTo;
+
+                if (lhs.isPlayer && rhs.isPlayer) return 0;
+                if (!lhs.isPlayer && !rhs.isPlayer) return 0;
+                if (lhs.isPlayer) return -1;
+                return 1;
+
+            }
+        });
+
+
+        MainAdapter.notifyDataSetChanged();
+        initiativeAdapter.updateData(Fighters);
+
+
 	}
 
 
@@ -178,13 +217,15 @@ public class GroundFightScene {
 			applyActions(position, Action);
 		}
 		
-		fighter.Played = true;
+		fighter.Played = initiativeAdapter.Play(fighter);
 		
 		
-		
+
 		
 		MainAdapter.notifyDataSetChanged();
         FighterListChanged.RunWhenFighterListChanged();
+        initiativeAdapter.updateData(Fighters);
+
 	}
 	
 	private static void applyManeuvers(int Position, String maneuver) {
@@ -222,7 +263,7 @@ public class GroundFightScene {
 	private static void applyActions(int Position, String action) {
 		GroundFighter fighter = Fighters.get(Position);
 
-        Context context = MainAdapter.getActualContext();
+        Context context = actualContext;
 		
 		if (action.startsWith(context.getString(R.string.action_attack_on))) {
 			String targetName = action.replace(context.getString(R.string.action_attack_on), "").trim();
@@ -238,9 +279,9 @@ public class GroundFightScene {
 
 			
 		}
-		if (action.equals(MainAdapter.getActualContext().getString(R.string.action_force_power)))
+		if (action.equals(actualContext.getString(R.string.action_force_power)))
 		{
-			GroundFightForceResolver.Resolve(MainAdapter.getActualContext(), Position);
+			GroundFightForceResolver.Resolve(actualContext, Position);
 			
 		}
 		
@@ -249,30 +290,23 @@ public class GroundFightScene {
 	}
 
 	public static void NextRound() {
-		for (GroundFighter fighter : Fighters) {
-//			android.util.Log.d("hopla", String.format("(%s) (%s)", fighter.LastAction, fighter.selectedAction));
-//			fighter.LastAction = fighter.selectedAction;
-//			android.util.Log.d("hopla", String.format("(%s) (%s)", fighter.LastAction, fighter.selectedAction));
-//			fighter.selectedAction = App.getContext().getString(R.string.action_none);
-//			
-//			fighter.LastManeuver = fighter.selectedManeuver;
-//			fighter.selectedManeuver = App.getContext().getString(R.string.action_none);
-			
-			fighter.Played = false;
-		}
+		for (GroundFighter fighter : Fighters)
+			fighter.Played = -1;
+
+        initiativeAdapter.updateData(Fighters);
+        MainAdapter.notifyDataSetChanged();
 		
 	}
-    public static void AddFighterRange(List<NPC> EncounterFighters) {
+/*    public static void AddFighterRange(List<NPC> EncounterFighters) {
         AddFighterRange(EncounterFighters, false);
-    }
+    }*/
 	public static void AddFighterRange(List<NPC> EncounterFighters, boolean Silently) {
 		for (NPC npc : EncounterFighters) {
 			android.util.Log.i("hopla", "Ajout de " + npc.Name);
 	   		
 			AddFighter(npc);
 		}
-		
-		ReorderFighters();
+
 
         if (!Silently) {
             MainAdapter.notifyDataSetChanged();

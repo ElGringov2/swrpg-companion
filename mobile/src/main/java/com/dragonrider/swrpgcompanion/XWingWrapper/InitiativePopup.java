@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.dragonrider.swrpgcompanion.R;
 
+
 /**
  * Created by mge637 on 01/08/2015. Popup d'initiative pour joueurs
  */
@@ -18,18 +19,15 @@ public class InitiativePopup {
         void OnValidate(int Triumph, int Success, int Advantage);
     }
 
-    static int Triumph;
-    static int Success;
-    static int Advantage;
-    public static void Show(Context context, final IOnValidateInitiative OnValidateInitiative) {
+
+    public static void Show(Context context, String PlayerName, final IOnValidateInitiative OnValidateInitiative) {
         View baseView = LayoutInflater.from(context).inflate(R.layout.listitem_startgroundfightitem, null, false);
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setView(baseView);
+        builder.setTitle(String.format("%s %s", context.getString(R.string.initiativeof), PlayerName));
 
-        Triumph = 0;
-        Success = 0;
-        Advantage = 0;
+        final Initiative initiative = new Initiative();
 
         baseView.findViewById(R.id.ListItemStartGroundFight_IsPresent).setVisibility(View.GONE);
 
@@ -44,43 +42,43 @@ public class InitiativePopup {
         baseView.findViewById(R.id.ListItemStartGroundFight_TriumphPlus).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Triumph++;
-                txtTriumph.setText(String.valueOf(Triumph));
+                initiative.Triumph++;
+                txtTriumph.setText(String.valueOf(initiative.Triumph));
             }
         });
         baseView.findViewById(R.id.ListItemStartGroundFight_TriumphMinus).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Triumph--;
-                txtTriumph.setText(String.valueOf(Triumph));
+                initiative.Triumph--;
+                txtTriumph.setText(String.valueOf(initiative.Triumph));
             }
         });
         baseView.findViewById(R.id.ListItemStartGroundFight_SuccessPlus).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Success++;
-                txtSuccess.setText(String.valueOf(Success));
+                initiative.Success++;
+                txtSuccess.setText(String.valueOf(initiative.Success));
             }
         });
         baseView.findViewById(R.id.ListItemStartGroundFight_SuccessMinus).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Success--;
-                txtSuccess.setText(String.valueOf(Success));
+                initiative. Success--;
+                txtSuccess.setText(String.valueOf(initiative.Success));
             }
         });
         baseView.findViewById(R.id.ListItemStartGroundFight_AdvantagePlus).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Advantage++;
-                txtAdvantage.setText(String.valueOf(Advantage));
+                initiative.Advantages++;
+                txtAdvantage.setText(String.valueOf(initiative.Advantages));
             }
         });
         baseView.findViewById(R.id.ListItemStartGroundFight_AdvantageMinus).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Advantage--;
-                txtAdvantage.setText(String.valueOf(Advantage));
+                initiative.Advantages--;
+                txtAdvantage.setText(String.valueOf(initiative.Advantages));
             }
         });
 
@@ -88,7 +86,7 @@ public class InitiativePopup {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 dialog.dismiss();
-                OnValidateInitiative.OnValidate(Triumph, Success, Advantage);
+                OnValidateInitiative.OnValidate(initiative.Triumph, initiative.Success, initiative.Advantages);
             }
         });
 

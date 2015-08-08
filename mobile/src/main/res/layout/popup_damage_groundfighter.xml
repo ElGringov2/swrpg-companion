@@ -8,13 +8,177 @@
         android:id="@+id/popupDamageGroundFighterDifficulty"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium" />
-    
-    <ListView
-        android:id="@+id/popupDamageGroundFighterMainList"
+        android:gravity="center"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:layout_margin="24dp"/>
+
+
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        />
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <SeekBar
+            android:id="@+id/seekBar1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"/>
+
+        <TextView
+            android:id="@+id/txtDamage"
+            android:layout_width="48dp"
+            android:layout_height="wrap_content"
+            android:textSize="32sp"
+            android:layout_gravity="center"/>
+
+
+    </LinearLayout>
+
+    <TextView
+        android:text="@string/pierce"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rdoPierce1"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/zero"
+            android:checked="true"
+            android:layout_height="wrap_content" />
+
+        <RadioButton
+            android:id="@+id/rdoPierce2"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/one"
+            android:checked="false"
+            android:layout_height="wrap_content" />
+
+        <RadioButton
+            android:id="@+id/rdoPierce3"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/two"
+            android:checked="false"
+            android:layout_height="wrap_content" />
+
+        <RadioButton
+            android:id="@+id/rdoPierce4"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/three"
+            android:checked="false"
+            android:layout_height="wrap_content" />
+
+        <RadioButton
+            android:id="@+id/rdoPierce5"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/four"
+            android:checked="false"
+            android:layout_height="wrap_content" />
+
+    </RadioGroup>
+
+    <TextView
+        android:text="@string/breach"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rdoBreach1"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/zero"
+            android:checked="true"
+            android:layout_height="wrap_content" />
+
+        <RadioButton
+            android:id="@+id/rdoBreach2"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/one"
+            android:checked="false"
+            android:layout_height="wrap_content" />
+
+        <RadioButton
+            android:id="@+id/rdoBreach3"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/two"
+            android:checked="false"
+            android:layout_height="wrap_content" />
+
+    </RadioGroup>
+
+    <TextView
+        android:text="@string/weapon_critical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/rdoCritical1"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/zero"
+            android:checked="true"
+            android:layout_height="wrap_content" />
+
+        <RadioButton
+            android:id="@+id/rdoCritical2"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/one"
+            android:checked="false"
+            android:layout_height="wrap_content" />
+
+        <RadioButton
+            android:id="@+id/rdoCritical3"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/two"
+            android:checked="false"
+            android:layout_height="wrap_content" />
+
+        <RadioButton
+            android:id="@+id/rdoCritical4"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/three"
+            android:checked="false"
+            android:layout_height="wrap_content" />
+
+        <RadioButton
+            android:id="@+id/rdoCritical5"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:text="@string/four"
+            android:checked="false"
+            android:layout_height="wrap_content" />
+
+    </RadioGroup>
+
+    <TextView
+        android:layout_margin="24dp"
+        android:id="@+id/textView1"
+        android:gravity="center"
+        android:textSize="32sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
 
 </LinearLayout>

@@ -21,4 +21,8 @@
     <item android:id="@+id/GroundFightMenu_AddEncounter" 
         android:title="@string/encounter" 
         />
+    <item android:id="@+id/GroundFightMenu_AddPlayer"
+        android:title="@string/add_player"/>
+    <item android:id="@+id/GroundFightMenu_AddPlayers"
+        android:title="@string/add_players"/>
 </menu>

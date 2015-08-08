@@ -64,7 +64,7 @@ public class SWGroupListBoxItemAdapter extends BaseExpandableListAdapter {
 	}
 
 	@Override
-	public Object getGroup(int groupPosition) {
+	public List<SWListBoxItem> getGroup(int groupPosition) {
         List<SWListBoxItem> group = _listDataChild.get(_listDataHeader.get(groupPosition));
         List<SWListBoxItem> tempGroup = new ArrayList<>();
         for (SWListBoxItem item : group)
@@ -77,7 +77,7 @@ public class SWGroupListBoxItemAdapter extends BaseExpandableListAdapter {
 	@Override
 	public Object getChild(int groupPosition, int childPosition) {
 
-        return ((List<SWListBoxItem>)getGroup(groupPosition)).get(childPosition);
+      	return (getGroup(groupPosition)).get(childPosition);
 
 	}
 

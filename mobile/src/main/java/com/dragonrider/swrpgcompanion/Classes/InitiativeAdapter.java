@@ -39,33 +39,6 @@ public class InitiativeAdapter<T> extends RecyclerView.Adapter<InitiativeAdapter
         this.mObjects = new ArrayList<>();
     }
 
-    public void updateData(List<T> items) {
-        if (items.size() == 0)
-        {
-            this.mSlots = new ArrayList<>();
-            this.mObjects = new ArrayList<>();
-        }
-        else {
-            this.mSlots = new ArrayList<>();
-            this.mObjects = new ArrayList<>();
-            for (int i = 0; i < items.size(); i++) {
-                this.mObjects.add(null);
-            }
-
-            if (items.get(0) instanceof CrewWrapper)
-                for(T wrapper : items)
-                {
-                    mSlots.add(((CrewWrapper)wrapper).isOnPlayerSlot ? 1 : 0);
-                    if (((CrewWrapper)wrapper).Played != -1)
-                        mObjects.add(((CrewWrapper)wrapper).Played, wrapper);
-
-
-                }
-        }
-
-
-        this.notifyDataSetChanged();
-    }
 
     public class SimpleViewHolder extends RecyclerView.ViewHolder {
 
@@ -147,8 +120,8 @@ public class InitiativeAdapter<T> extends RecyclerView.Adapter<InitiativeAdapter
 
             if (mObjects.get(position) instanceof CrewWrapper)
                 holder.imageView.setImageBitmap(((CrewWrapper)mObjects.get(position)).baseNPC.getImage());
-
-
+            if (mObjects.get(position) instanceof GroundFighter)
+                holder.imageView.setImageBitmap(((GroundFighter)mObjects.get(position)).getBase().getImage());
         }
 
         holder.imageView.setOnClickListener(new View.OnClickListener() {
@@ -200,6 +173,10 @@ public class InitiativeAdapter<T> extends RecyclerView.Adapter<InitiativeAdapter
     }
 
     public int Play(T player) {
+
+        if (player instanceof GroundFighter && ((GroundFighter)player).Played != -1) return ((GroundFighter)player).Played;
+        if (player instanceof CrewWrapper && ((CrewWrapper)player).Played != -1) return ((CrewWrapper)player).Played;
+
         int Position = 0;
         for (T obj : mObjects)
         {
@@ -215,5 +192,41 @@ public class InitiativeAdapter<T> extends RecyclerView.Adapter<InitiativeAdapter
         this.notifyDataSetChanged();
 
         return Position;
+    }
+
+
+    public void updateData(List<T> items) {
+        if (items.size() == 0)
+        {
+            this.mSlots = new ArrayList<>();
+            this.mObjects = new ArrayList<>();
+        }
+        else {
+            this.mSlots = new ArrayList<>();
+            this.mObjects = new ArrayList<>();
+            for (int i = 0; i < items.size(); i++) {
+                this.mObjects.add(null);
+            }
+
+            if (items.get(0) instanceof CrewWrapper)
+                for(T wrapper : items)
+                {
+                    mSlots.add(((CrewWrapper)wrapper).isOnPlayerSlot ? 1 : 0);
+                    if (((CrewWrapper)wrapper).Played != -1)
+                        mObjects.set(((CrewWrapper) wrapper).Played, wrapper);
+
+
+                }
+            else if (items.get(0) instanceof GroundFighter)
+                for (T fighter : items)
+                {
+                    mSlots.add(((GroundFighter) fighter).isAlly() ? 1 : 0);
+                    if (((GroundFighter) fighter).Played >= 0)
+                        mObjects.set(((GroundFighter) fighter).Played, fighter);
+                }
+        }
+
+
+        this.notifyDataSetChanged();
     }
 }

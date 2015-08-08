@@ -2,6 +2,7 @@ package com.dragonrider.swrpgcompanion.XWingWrapper;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,7 +13,9 @@ import android.widget.EditText;
 
 import com.dragonrider.swrpgcompanion.R;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * Created by mge637 on 01/03/2015.
@@ -23,15 +26,15 @@ public class VehicleFightActivity extends Activity {
     static VehicleFighterAdapter adapter;
 
     public static void ClearFight() {
-        if (adapter != null)
-            adapter.ClearFighters();
-        else
-            adapter = new VehicleFighterAdapter(new ArrayList<VehicleFighter>());
+
+
+        adapter = null;
     }
 
+    private static String filename = "";
     public static void LoadFight(String Filename) {
-        ClearFight();
-        adapter.LoadFromFile(Filename);
+        adapter = null;
+        filename = Filename;
     }
 
     @Override
@@ -42,7 +45,12 @@ public class VehicleFightActivity extends Activity {
 
 
         if (adapter == null)
-            adapter = new VehicleFighterAdapter(new ArrayList<VehicleFighter>());
+            adapter = new VehicleFighterAdapter(this, new ArrayList<VehicleFighter>());
+
+        if (!Objects.equals(filename, "")) {
+            adapter.LoadFromFile(filename);
+            filename = "";
+        }
 
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.RecyclerView);
 

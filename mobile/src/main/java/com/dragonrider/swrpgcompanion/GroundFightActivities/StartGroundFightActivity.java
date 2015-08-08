@@ -22,7 +22,7 @@ import com.dragonrider.swrpgcompanion.Classes.GroundFightScene;
 import com.dragonrider.swrpgcompanion.Classes.GroundFighter;
 import com.dragonrider.swrpgcompanion.Classes.PlayerCharacter;
 
-
+@Deprecated
 public class StartGroundFightActivity extends Activity {
 
 	List<PlayerCharacter> lst;
@@ -143,11 +143,9 @@ public class StartGroundFightActivity extends Activity {
 				GroundFighter fighter = new GroundFighter(0);
 				fighter.setBase(null);
 				fighter.Name = lst.get(i).CharacterName;
-				fighter.setMainInitiative(triumphs.get(i));
-				fighter.setInitiative(success.get(i));
-				fighter.setSubinitiative(advantages.get(i));
+				fighter.setMainInitiative(triumphs.get(i),success.get(i),advantages.get(i));
 				
-				GroundFightScene.AddPlayerFighter(fighter);
+				GroundFightScene.AddFighter(fighter);
 			}
 		}
 

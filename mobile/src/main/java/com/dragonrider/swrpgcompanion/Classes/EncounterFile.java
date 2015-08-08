@@ -56,7 +56,7 @@ public class EncounterFile {
 
 
         for (final SimpleEncounterFighter fighter : this.Fighters) {
-            GroundFighter groundFighter = new GroundFighter(GroundFightScene.PlayerFighterCount);
+            GroundFighter groundFighter = new GroundFighter(GroundFightScene.PlayerNames.size());
             groundFighter.setBase(fighter.getBaseNPC());
             if (!fighter.Name.isEmpty())
                 groundFighter.setName(fighter.Name);

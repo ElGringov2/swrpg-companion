@@ -82,13 +82,13 @@ public class GroundFightAttackResolver extends Activity {
             findViewById(R.id.GroundFightResolver_NPCDamageButton).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    _defender.DamageUI(GroundFightAttackResolver.this, GroundFightScene.MainAdapter);
+                    _defender.DamageUI(GroundFightAttackResolver.this, GroundFightScene.MainAdapter, null);
                 }
             });
             findViewById(R.id.GroundFightResolver_NPCCriticalButton).setOnClickListener(new OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    _defender.CriticalUI(GroundFightAttackResolver.this);
+                    _defender.CriticalUI(GroundFightAttackResolver.this, null);
                 }
             });
             _defender.addDefends(attacker.getFullName());
@@ -190,7 +190,7 @@ public class GroundFightAttackResolver extends Activity {
 		if (rr.Succcess() > 0) {
 			textResult = "Attaque avec " + attacker.getEquippedWeapon().toString();
 			textResult += "\n";
-			int iAddDamage = rr.Succcess() > 0 ? rr.Succcess() - 1 : 0;
+			int iAddDamage = rr.Succcess() > 0 ? rr.Succcess() : 0;
 			int iMeleeDamage = 0;
 			if (wp.SkillID == Skills.melee.ordinal() || wp.SkillID == Skills.brawl.ordinal())
 				iMeleeDamage += attacker.getBase().Characteristics.get(Characteristics.Brawn.ordinal());

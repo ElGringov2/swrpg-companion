@@ -83,5 +83,16 @@
     <string name="title_activity_main_wear">MainWearActivity</string>
     <string name="hello_round">Hello Round World!</string>
     <string name="hello_square">Hello Square World!</string>
+    <string name="edit">Editer</string>
+    <string name="close">Fermer</string>
+    <string name="add_player">Ajouter un joueur</string>
+    <string name="add_players">Ajouter les joueurs</string>
+    <string name="initiativeof">Initiative de</string>
+    <string name="zero">0</string>
+    <string name="one">1</string>
+    <string name="two">2</string>
+    <string name="three">3</string>
+    <string name="four">4</string>
+    <string name="breach">Breach</string>
 
 </resources>
