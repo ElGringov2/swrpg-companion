@@ -64,7 +64,7 @@ public class VehiculeFighterDamagePopup {
 
 
 
-    public static void Show(Context context, final VehicleFighter fighter, int Damage, final onValidatePopupListener onvalidatePopupListener) {
+    public static void Show(final Context context, final VehicleFighter fighter, int Damage, final onValidatePopupListener onvalidatePopupListener) {
 
         View baseView = LayoutInflater.from(context).inflate(R.layout.vehicle_damage_popup, null);
 
@@ -193,6 +193,30 @@ public class VehiculeFighterDamagePopup {
                 iDamage -= iArmor;
                 if (iDamage >0)
                     fighter.setActualHullTrauma(fighter.getActualHullTrauma() - iDamage);
+
+                if (fighter.getActualHullTrauma() <= 0)
+                {
+                    new AlertDialog.Builder(context)
+                            .setMessage(R.string.target_has_no_hull_remove_question)
+                            .setTitle(R.string.remove)
+                            .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    for (CrewWrapper wrapper : fighter.getCrew())
+                                        if (wrapper.isPlayer)
+                                            VehicleFightActivity.adapter.Players.add(wrapper.baseNPC);
+
+                                    VehicleFightActivity.adapter.removeVehicle(fighter);
+                                }
+                            })
+                            .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    dialog.dismiss();
+                                }
+                            })
+                            .show();
+                }
 
                 onvalidatePopupListener.onValidatePopup();
                 dialog.dismiss();

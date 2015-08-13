@@ -8,6 +8,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.RadioButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -408,19 +409,11 @@ public class GroundFighter {
 	
 	public void DamageUI(final Context context, final GroundFighterAdapter parentAdapter, final GenericEditor.IOnPopupClosed onPopupClosed) {
 
-        //List<String> strings = getAllFormattedDamageText();
 
-
-		//ArrayAdapter<String> adapter = new ArrayAdapter<> (context, android.R.layout.simple_dropdown_item_1line, strings);
-		
-		
 		
 		View baseView = LayoutInflater.from(context).inflate(R.layout.popup_damage_groundfighter, null);
 		
-		//ListView lv =  (ListView) baseView.findViewById(R.id.popupDamageGroundFighterMainList);
-		//lv.setAdapter(adapter);
-		
-		
+
 		
 
 		TextView tview = (TextView) baseView.findViewById(R.id.popupDamageGroundFighterDifficulty);
@@ -465,17 +458,18 @@ public class GroundFighter {
 
         final TextView resultTextView = (TextView)baseView.findViewById(R.id.textView1);
         final TextView damageTextView = (TextView)baseView.findViewById(R.id.txtDamage);
+        damageTextView.setText("8");
+        damageTextView.setTag(8);
 
         final int brawnSoak = this.getBase().Characteristics.get(Characteristic.Characteristics.Brawn.ordinal());
 
         final int armorSoak = this.getBase().Soak - brawnSoak;
 
-        final int meleeLightSaber = this.getBase().getTalent(Talent.TalentIDs.parry) + 2;
-
-        final int rangedLightSaber = this.getBase().getTalent(Talent.TalentIDs.reflect) + 2;
+        final int meleeLightSaber = this.getBase().getTalent(Talent.TalentIDs.parry) > 0 ? this.getBase().getTalent(Talent.TalentIDs.parry) + 2 : 0;
 
 
-        final SeekBar damageSeekBar = (SeekBar) baseView.findViewById(R.id.seekBar1);
+        final int rangedLightSaber = this.getBase().getTalent(Talent.TalentIDs.reflect) > 0 ? this.getBase().getTalent(Talent.TalentIDs.reflect) + 2 : 0;
+
 
         final RadioButton rdoBreach1 = (RadioButton) baseView.findViewById(R.id.rdoBreach2);
         final RadioButton rdoBreach2 = (RadioButton) baseView.findViewById(R.id.rdoBreach3);
@@ -490,10 +484,25 @@ public class GroundFighter {
         final RadioButton rdoCritical3 = (RadioButton) baseView.findViewById(R.id.rdoCritical4);
         final RadioButton rdoCritical4 = (RadioButton) baseView.findViewById(R.id.rdoCritical5);
 
-        damageSeekBar.setMax(30);
-        damageSeekBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+        final CheckBox chkUseParry = (CheckBox) baseView.findViewById(R.id.chkUseParry);
+        final CheckBox chkUseReflect = (CheckBox) baseView.findViewById(R.id.chkUseReflect);
+
+
+        View.OnClickListener listener = new View.OnClickListener() {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            public void onClick(View v) {
+
+                int iDamage = (int) damageTextView.getTag();
+
+                if (v != null && v.getId() == R.id.btnDamageMinus && iDamage != 0)
+                    iDamage--;
+                if (v != null && v.getId() == R.id.btnDamagePlus)
+                    iDamage++;
+
+
+                damageTextView.setTag(iDamage);
+                damageTextView.setText(String.valueOf(iDamage));
+
 
                 int finalSoak = armorSoak -
                         (rdoBreach1.isChecked() ? 10 : 0) -
@@ -504,11 +513,13 @@ public class GroundFighter {
                         (rdoPierce4.isChecked() ? 1 : 0);
                 if (finalSoak < 0) finalSoak = 0;
 
+                finalSoak += brawnSoak;
 
-                int finalMeleeDamage = progress - finalSoak - meleeLightSaber;
+
+                int finalMeleeDamage = iDamage - finalSoak - (chkUseParry.isChecked() ? meleeLightSaber : 0);
                 if (finalMeleeDamage < 0) finalMeleeDamage = 0;
 
-                int finalRangedDamage = progress - finalSoak - rangedLightSaber;
+                int finalRangedDamage = iDamage - finalSoak - (chkUseReflect.isChecked() ? rangedLightSaber : 0);
                 if (finalRangedDamage < 0) finalRangedDamage = 0;
 
                 String meleeDamageText = String.valueOf(finalMeleeDamage);
@@ -519,28 +530,35 @@ public class GroundFighter {
                 if (finalRangedDamage == 0) rangedDamageText = "Aucun dégâts.";
                 if (finalRangedDamage + ActualWounds >= TotalWounds) rangedDamageText = "A terre.";
 
-                damageTextView.setText(String.valueOf(progress));
+
 
                 resultTextView.setText(String.format("Mélée: %s\nDistance: %s", meleeDamageText, rangedDamageText));
                 rdoBreach1.setTag(finalMeleeDamage);
                 rdoPierce1.setTag(finalRangedDamage);
 
-
             }
+        };
 
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
+        final View btnMinus = baseView.findViewById(R.id.btnDamageMinus);
+        btnMinus.setOnClickListener(listener);
+        final View btnPlus = baseView.findViewById(R.id.btnDamagePlus);
+        btnPlus.setOnClickListener(listener);
 
-            }
+        rdoBreach1.setOnClickListener(listener);
+        rdoBreach2.setOnClickListener(listener);
+        rdoCritical1.setOnClickListener(listener);
+        rdoCritical2.setOnClickListener(listener);
+        rdoCritical3.setOnClickListener(listener);
+        rdoCritical4.setOnClickListener(listener);
+        rdoPierce1.setOnClickListener(listener);
+        rdoPierce2.setOnClickListener(listener);
+        rdoPierce3.setOnClickListener(listener);
+        rdoPierce4.setOnClickListener(listener);
 
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
+        chkUseParry.setOnClickListener(listener);
+        chkUseReflect.setOnClickListener(listener);
 
-            }
-        });
-
-        damageSeekBar.setProgress(0);
-
+        listener.onClick(null);
 		
 		new AlertDialog.Builder(context)
 		.setTitle("Infliger des dégâts")
@@ -564,13 +582,16 @@ public class GroundFighter {
                         (rdoCritical3.isChecked() ? 3 : 0) +
                         (rdoCritical4.isChecked() ? 4 : 0);
 
-                applyDamage(Damage, Critical, context, new GenericEditor.IOnPopupClosed() {
+                int strain = chkUseReflect.isChecked() ? 3 : 0;
+
+                applyDamage(Damage, strain, Critical, context, new GenericEditor.IOnPopupClosed() {
                     @Override
                     public void OnClosed() {
                         if (onPopupClosed != null) onPopupClosed.OnClosed();
                         parentAdapter.notifyDataSetChanged();
                     }
                 });
+                parentAdapter.notifyDataSetChanged();
 
 
                 dialog.dismiss();
@@ -588,13 +609,16 @@ public class GroundFighter {
                         (rdoCritical3.isChecked() ? 3 : 0) +
                         (rdoCritical4.isChecked() ? 4 : 0);
 
-                applyDamage(Damage, Critical, context, new GenericEditor.IOnPopupClosed() {
+                int strain = chkUseParry.isChecked() ? 3 : 0;
+
+                applyDamage(Damage, strain, Critical, context, new GenericEditor.IOnPopupClosed() {
                     @Override
                     public void OnClosed() {
                         if (onPopupClosed != null) onPopupClosed.OnClosed();
                         parentAdapter.notifyDataSetChanged();
                     }
                 });
+                parentAdapter.notifyDataSetChanged();
 
 
                 dialog.dismiss();
@@ -605,14 +629,14 @@ public class GroundFighter {
 				
 	}
 
-    private void applyDamage(final int damage, int critical, final Context context, final GenericEditor.IOnPopupClosed onPopupClosed) {
+    private void applyDamage(final int damage, final int strain, int critical, final Context context, final GenericEditor.IOnPopupClosed onPopupClosed) {
 
 
         if (critical > 0) {
             CriticalUI(context, critical, new GenericEditor.IOnPopupClosed() {
                 @Override
                 public void OnClosed() {
-                    applyDamage(damage, 0, context, onPopupClosed);
+                    applyDamage(damage, strain, 0, context, onPopupClosed);
                 }
             });
             return;
@@ -622,6 +646,7 @@ public class GroundFighter {
         int oldValue = getCount();
 
         ActualWounds += damage;
+        ActualStrain += strain;
 
 
 
@@ -659,6 +684,8 @@ public class GroundFighter {
             })
             .show();
         }
+
+        onPopupClosed.OnClosed();
 
 
     }

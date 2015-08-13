@@ -94,5 +94,7 @@
     <string name="three">3</string>
     <string name="four">4</string>
     <string name="breach">Breach</string>
+    <string name="use_parry">Utiliser Parade?</string>
+    <string name="use_reflect">Utiliser Reflexion?</string>
 
 </resources>

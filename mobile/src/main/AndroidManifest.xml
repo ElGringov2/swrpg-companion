@@ -23,18 +23,8 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".GroundFightActivities.GroundFightActivity"
-            android:label="@string/title_activity_ground_fight"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
             android:name=".GroundFightActivities.AddFightersActivity"
             android:label="@string/title_activity_add_fighters"
-            android:screenOrientation="portrait" >
-        </activity>
-        <activity
-            android:name=".GroundFightActivities.StartGroundFightActivity"
-            android:label="@string/title_activity_start_ground_fight"
             android:screenOrientation="portrait" >
         </activity>
         <activity

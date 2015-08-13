@@ -894,6 +894,12 @@ public class Talent {
 		if (id == TalentIDs.helium_allergy.ordinal())
 			return "Helium Allergy";
 
+        if (id == TalentIDs.parry.ordinal())
+            return "Parade";
+
+        if (id == TalentIDs.reflect.ordinal())
+            return "Reflexion";
+
 		return "UNKNOW";
 	}
 
@@ -1390,6 +1396,11 @@ public class Talent {
 		if (id == TalentIDs.helium_allergy.ordinal())
 			return "When exposed to helium, suffer 1 wound per round ignoring soak.";
 
+        if (id == TalentIDs.parry.ordinal())
+            return "Subissez 3 stress pour ignorer 2 + le nombre de rangs points de dégâts sur une attaque de mélée";
+
+        if (id == TalentIDs.reflect.ordinal())
+            return "Subissez 3 stress pour ignorer 2 + le nombre de rangs points de dégâts sur une attaque de mélée";
 		return "";
 	}
 

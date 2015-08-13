@@ -95,12 +95,6 @@ public class GroundFightMultiPanelActivity extends FragmentActivity {
             GroundFightScene.RefreshContext(this);
 
 
-
-//        if (getIntent().getExtras().getBoolean(ADDPLAYER)) {
-//            Intent intent = new Intent(this, StartGroundFightActivity.class);
-//            startActivity(intent);
-//        }
-
         mPager = (ViewPager) findViewById(R.id.pager);
         adapter = new CustomPagerAdapter(getSupportFragmentManager());
 

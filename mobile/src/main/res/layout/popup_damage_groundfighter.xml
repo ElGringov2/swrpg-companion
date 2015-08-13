@@ -17,11 +17,14 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-        <SeekBar
-            android:id="@+id/seekBar1"
+
+        <Button
+            android:id="@+id/btnDamageMinus"
             android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:text="-"
+            android:layout_height="match_parent" />
 
         <TextView
             android:id="@+id/txtDamage"
@@ -31,18 +34,27 @@
             android:layout_gravity="center"/>
 
 
+        <Button
+            android:id="@+id/btnDamagePlus"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:background="?android:attr/selectableItemBackground"
+            android:text="+"
+            android:layout_height="match_parent" />
+
+
     </LinearLayout>
 
-    <TextView
-        android:text="@string/pierce"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+
 
     <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-
+        <TextView
+            android:text="@string/pierce"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
         <RadioButton
             android:id="@+id/rdoPierce1"
             android:layout_width="0dp"
@@ -85,15 +97,15 @@
 
     </RadioGroup>
 
-    <TextView
-        android:text="@string/breach"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+
     <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
-
+        <TextView
+            android:text="@string/breach"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
         <RadioButton
             android:id="@+id/rdoBreach1"
             android:layout_width="0dp"
@@ -120,15 +132,16 @@
 
     </RadioGroup>
 
-    <TextView
-        android:text="@string/weapon_critical"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content" />
+
 
     <RadioGroup
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
+        <TextView
+            android:text="@string/weapon_critical"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
 
         <RadioButton
             android:id="@+id/rdoCritical1"
@@ -172,11 +185,29 @@
 
     </RadioGroup>
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <CheckBox
+            android:id="@+id/chkUseParry"
+            android:text="@string/use_parry"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+        <CheckBox
+            android:id="@+id/chkUseReflect"
+            android:text="@string/use_reflect"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"/>
+    </LinearLayout>
+
     <TextView
         android:layout_margin="24dp"
         android:id="@+id/textView1"
         android:gravity="center"
-        android:textSize="32sp"
+        android:textSize="24sp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 

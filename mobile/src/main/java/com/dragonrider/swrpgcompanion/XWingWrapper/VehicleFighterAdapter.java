@@ -93,7 +93,7 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
 
 
     //Liste temporaire des joueurs pour eviter doublons
-    private List<NPC> Players;
+    public List<NPC> Players;
 
 
     public List<CrewWrapper> getCrews() {
@@ -245,7 +245,12 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
 
     public void removeVehicle(int fighter) {
         Fighters.remove(fighter);
-        NextRound();
+        //NextRound();
+        FinalNotifyDataSetChanged();
+    }
+
+    public void removeVehicle(VehicleFighter fighter) {
+        Fighters.remove(fighter);
         FinalNotifyDataSetChanged();
     }
 
@@ -518,9 +523,12 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
                 @Override
                 public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
                     HullTraumaValue.setText(String.valueOf(progress));
-                    if (fromUser) Fighters.get(FighterID).setActualHullTrauma(progress);
+                    if (fromUser) {
+                        Fighters.get(FighterID).setActualHullTrauma(progress);
 
-                    //TODO Si zero, popup de suppression du vaisseau + récap des personnages a bord pour blessures
+                    }
+
+
                 }
 
                 @Override
