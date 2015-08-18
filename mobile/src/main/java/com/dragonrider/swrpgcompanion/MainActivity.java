@@ -58,35 +58,6 @@ public class MainActivity extends Activity {
 		setContentView(R.layout.activity_main);
 
 
-        //Wear notification
-
-        int notificationId = 1;
-// Build intent for notification content
-        //Intent viewIntent = new Intent(this, .class);
-        //viewIntent.putExtra(EXTRA_EVENT_ID, eventId);
-        //PendingIntent viewPendingIntent =
-        //        PendingIntent.getActivity(this, 0, viewIntent, 0);
-
-        NotificationCompat.WearableExtender wearableExtender =
-                new NotificationCompat.WearableExtender()
-                        .setHintHideIcon(true)
-                        .setBackground(BitmapFactory.decodeResource(getResources(), R.drawable.dicerollerwear));
-
-        NotificationCompat.Builder notificationBuilder =
-                new NotificationCompat.Builder(this)
-                        .setSmallIcon(R.drawable.ic_launcher)
-                        .setContentTitle("SWEotE")
-                        .setContentText("Appuyer ici pour lancer les dés")
-                        .extend(wearableExtender);
-                        //.setContentIntent(viewPendingIntent);
-
-// Get an instance of the NotificationManager service
-        NotificationManagerCompat notificationManager =
-                NotificationManagerCompat.from(this);
-
-// Build the notification and issues it with notification manager.
-        //notificationManager.notify(notificationId, notificationBuilder.build());
-        //end wear notification
 
         adapter = new MainMenuDrawerAdapter();
 
@@ -156,12 +127,12 @@ public class MainActivity extends Activity {
                 .setName("Voir les véhicules")
                 .setDescription("Visualise les differents véhicules disponibles")
                 .setAction(new IMainMenuItemAction() {
-                               @Override
-                               public void Action() {
-                                   Intent intent = new Intent(MainActivity.this, ViewVehicleActivity.class);
-                                   startActivity(intent);
-                               }
-                           }));
+                    @Override
+                    public void Action() {
+                        Intent intent = new Intent(MainActivity.this, ViewVehicleActivity.class);
+                        startActivity(intent);
+                    }
+                }));
         adapter.addMainMenuItem("XWing", new MainMenuItem()
                 .setName("Nouveau Combat X-Wing")
                 .setDescription("Nouveau combat avec figurine X-Wing")
@@ -233,10 +204,10 @@ public class MainActivity extends Activity {
                 }));
 
 
-        adapter.addItem("Scenarios",  (BitmapDrawable) getResources().getDrawable(R.drawable.scenarioeditormenu));
+        adapter.addItem("Scenarios", (BitmapDrawable) getResources().getDrawable(R.drawable.scenarioeditormenu));
         adapter.addMainMenuItem("Scenarios", new MainMenuItem()
-                .setName("Test")
-                .setDescription("Teste l'afficheur de scénario")
+                .setName("Reprendre")
+                .setDescription("Reprendre le scénario actuel")
                 .setAction(new IMainMenuItemAction() {
                     @Override
                     public void Action() {
@@ -244,6 +215,8 @@ public class MainActivity extends Activity {
                         startActivity(intent);
                     }
                 }));
+        adapter.addMainMenuItem("Scenarios", MainMenuItem.PrepareScenariosSpecialMenuItem());
+
 
         adapter.addItem("Sabacc", (BitmapDrawable) getResources().getDrawable(R.drawable.sabaccgamemenu));
         adapter.addMainMenuItem("Sabacc", new MainMenuItem()
@@ -417,11 +390,11 @@ public class MainActivity extends Activity {
 
 
     public interface IMainMenuItemAction {
-        public void Action();
+        void Action();
 
     }
     public interface IMainMenuEnableCheck {
-        public boolean Check();
+        boolean Check();
     }
 
 

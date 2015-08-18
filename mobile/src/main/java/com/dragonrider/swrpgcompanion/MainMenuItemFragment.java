@@ -16,9 +16,13 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.dragonrider.swrpgcompanion.Classes.EncounterFile;
+import com.dragonrider.swrpgcompanion.Classes.XmlImport;
 import com.dragonrider.swrpgcompanion.GroundFightActivities.GroundFightMultiPanelActivity;
+import com.dragonrider.swrpgcompanion.Scenario.Campaign;
+import com.dragonrider.swrpgcompanion.Scenario.Scenario;
+import com.dragonrider.swrpgcompanion.Scenario.ScenarioItemAdapter;
+import com.dragonrider.swrpgcompanion.Scenario.activityScenarioViewer;
 import com.dragonrider.swrpgcompanion.XWingWrapper.VehicleFightActivity;
-import com.dragonrider.swrpgcompanion.XWingWrapper.VehicleFighterAdapter;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -89,6 +93,8 @@ public class MainMenuItemFragment extends Fragment {
                 AddAllPrepareFight(layout, inflater);
             else if (item.equals(MainMenuItem.PrepareVehicleCombatSpecialMenuItem()))
                 AddAllPrepareVehicleFight(layout, inflater);
+            else if (item.equals(MainMenuItem.PrepareScenariosSpecialMenuItem()))
+                AddAllPrepareScenarios(layout, inflater);
             else {
                 View smallView = inflater.inflate(R.layout.listitem_swlistitem, layout, false);
                 TextView textViewTitle = (TextView) smallView.findViewById(R.id.swListItem_Title);
@@ -276,6 +282,100 @@ public class MainMenuItemFragment extends Fragment {
 
         task.execute();
     }
+
+
+
+    private void AddAllPrepareScenarios(final LinearLayout layout, final LayoutInflater inflater) {
+
+
+        AsyncTask<String, Integer, List<MainMenuItem>> task = new AsyncTask<String, Integer, List<MainMenuItem>>() {
+            @Override
+            protected List<MainMenuItem> doInBackground(String... strings) {
+                File sdCardRoot = Environment.getExternalStorageDirectory();
+                File dir = new File(sdCardRoot, "SWEotE/Scenarios");
+                File[] files = dir.listFiles();
+                List<MainMenuItem> lst = new ArrayList<>();
+
+                for (final File file : files) {
+
+                    Campaign campaign = XmlImport.ImportCampaign(file.getAbsolutePath());
+
+
+                    if (campaign != null) {
+                        for (final Scenario scenario : campaign.getScenarios()) {
+
+
+                            MainMenuItem item = new MainMenuItem();
+                            item.setName(campaign.getCampaignName() + ": " + scenario.getName());
+                            item.setAction(new MainActivity.IMainMenuItemAction() {
+                                @Override
+                                public void Action() {
+                                    activityScenarioViewer.mainAdapter = new ScenarioItemAdapter(scenario.getItems(), getActivity());
+                                    activityScenarioViewer.mainAdapter.ScenarioName = scenario.getName();
+                                    Intent intent = new Intent(getActivity(), activityScenarioViewer.class);
+                                    startActivity(intent);
+                                }
+                            });
+                            lst.add(item);
+                        }
+                    }
+
+                }
+
+
+                return lst;
+            }
+
+            @Override
+            protected void onProgressUpdate(Integer... values) {
+                super.onProgressUpdate(values);
+            }
+
+            @Override
+            protected void onPostExecute(List<MainMenuItem> items) {
+
+                for (final MainMenuItem item : items) {
+                    View smallView = inflater.inflate(R.layout.listitem_swlistitem, layout, false);
+                    TextView textViewTitle = (TextView)smallView.findViewById(R.id.swListItem_Title);
+                    textViewTitle.setText(item.getName());
+                    textViewTitle.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            item.getAction().Action();
+
+                        }
+                    });
+                    TextView textViewDesc = (TextView)smallView.findViewById(R.id.swListItem_Desc);
+                    textViewDesc.setText(item.getDescription());
+                    textViewDesc.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            item.getAction().Action();
+
+
+                        }
+                    });
+
+                    smallView.findViewById(R.id.swListItem_Image).setVisibility(View.GONE);
+                    layout.addView(smallView);
+                    if (items.indexOf(item) != items.size() - 1)
+                    {
+                        View separator = new View(getActivity());
+                        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1);
+                        params.setMargins(4, 4, 4, 4);
+                        separator.setLayoutParams(params);
+                        separator.setBackground(getActivity().getResources().getDrawable(android.R.color.darker_gray));
+                        layout.addView(separator);
+                    }
+                }
+            }
+        };
+
+        task.execute();
+    }
+
+
+
 
     private class onMenuItemClickListener implements View.OnClickListener {
         private final MainActivity.IMainMenuItemAction Action;

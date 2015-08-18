@@ -1,21 +1,23 @@
 package com.dragonrider.swrpgcompanion.Scenario;
 
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.os.Handler;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.BaseAdapter;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
-import com.dragonrider.swrpgcompanion.Classes.XmlImport;
 import com.dragonrider.swrpgcompanion.R;
 
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserException;
-
-import java.io.IOException;
+import java.util.Date;
 import java.util.List;
 
 public class ScenarioItemAdapter extends RecyclerView.Adapter {
@@ -23,25 +25,83 @@ public class ScenarioItemAdapter extends RecyclerView.Adapter {
 
     public String ScenarioName;
 
-    public static ScenarioItemAdapter getFromFile(String filename, Context context) {
-
-
-        return new ScenarioItemAdapter(XmlImport.ImportScenarioFile(filename), context);
-
-
-
-    }
-
 
 
 
     private List<ScenarioItem> Items;
 
     private Context context;
+    private Date mDate;
 
-    public ScenarioItemAdapter(List<ScenarioItem> items, Context context) {
+
+    public ScenarioItemAdapter(List<ScenarioItem> items, final Context context) {
         Items = items;
         this.context = context;
+
+        final Handler handler = new Handler();
+        handler.postDelayed( new Runnable() {
+
+            @Override
+            public void run() {
+                if (mDate != null) {
+
+                    for (ScenarioItem item : Items)
+                        if (!item.getNotification()) {
+                            long lNow = new Date().getTime();
+                            long lLimit = mDate.getTime() + (item.getDuration() * 1000 * 60 * 60);
+
+
+                            if (lLimit <= lNow)
+                            {
+                                item.setNotification(true);
+
+
+                                //Wear notification
+
+                                int notificationId = Items.indexOf(item) + 1000;
+
+
+                                NotificationCompat.WearableExtender wearableExtender = new NotificationCompat.WearableExtender()
+                                        .setBackground(BitmapFactory.decodeResource(context.getResources(), R.drawable.scenarioeditormenu));
+
+                                Intent resultIntent = new Intent(context, activityScenarioViewer.class);
+                                PendingIntent pendingItent = PendingIntent.getActivity(context, 0, resultIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+                                String contentText = String.format("Attention, un élément de scénario arrive à échéance:\n%s (sur %s)", item.getName(), item.getLocation());
+
+                                NotificationCompat.Builder notificationBuilder =
+                                        new NotificationCompat.Builder(context)
+                                                .setSmallIcon(R.drawable.ic_launcher)
+                                                .setContentTitle("SWEotE")
+                                                .extend(wearableExtender)
+                                                .setVibrate(new long[]{100, 100, 100})
+                                                .setContentIntent(pendingItent)
+                                                .setAutoCancel(true)
+                                                .setContentText(contentText);
+
+
+// Get an instance of the NotificationManager service
+                                NotificationManagerCompat notificationManager =
+                                        NotificationManagerCompat.from(context);
+
+// Build the notification and issues it with notification manager.
+                                notificationManager.notify(notificationId, notificationBuilder.build());
+                                //end wear notification
+
+
+                            }
+
+                        }
+
+
+
+
+
+
+                }
+                handler.postDelayed( this, 60 * 1000 );
+            }
+        }, 60 * 1000 );
     }
 
     public void removeAt(int position) {
@@ -49,16 +109,13 @@ public class ScenarioItemAdapter extends RecyclerView.Adapter {
         super.notifyItemRemoved(position);
     }
 
-//
-//    @Override
-//    public int getCount() {
-//        return Items.size();
-//    }
-//
-//    @Override
-//    public Object getItem(int i) {
-//        return Items.get(i);
-//    }
+    public void setDate(Date date) {
+        this.mDate = date;
+    }
+
+    public Date getDate() {
+        return mDate;
+    }
 
 
 
@@ -85,6 +142,10 @@ public class ScenarioItemAdapter extends RecyclerView.Adapter {
     public static class FightScenarioViewHolder extends RecyclerView.ViewHolder {
         public FightScenarioViewHolder(View itemView) {
             super(itemView);
+
+            imageButton = (ImageButton) itemView.findViewById(R.id.ImageButton);
+            textView = (TextView) itemView.findViewById(R.id.textView);
+
         }
 
         public ImageButton imageButton;
@@ -121,7 +182,15 @@ public class ScenarioItemAdapter extends RecyclerView.Adapter {
 
         ScenarioItem item = Items.get(position);
 
-        item.UpdateViewHolder(holder, context);
+
+        Date myDate;
+        if (mDate == null)
+            myDate = new Date();
+        else
+            myDate = new Date(mDate.getTime());
+
+
+        item.UpdateViewHolder(holder, context, myDate);
 
 
 
@@ -152,8 +221,4 @@ public class ScenarioItemAdapter extends RecyclerView.Adapter {
         return Items.size();
     }
 
-//    @Override
-//    public View getView(int i, View view, ViewGroup viewGroup) {
-//        return Items.get(i).getView(LayoutInflater.from(context), viewGroup);
-//    }
 }

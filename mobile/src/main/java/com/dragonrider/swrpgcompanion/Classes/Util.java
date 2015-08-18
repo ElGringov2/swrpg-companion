@@ -122,6 +122,11 @@ public class Util {
 
     public static void setTextViewSymbols(TextView txt, String Description, StandardTagHangler customTagHandler) {
 
+        if (Description == null || Description.isEmpty()) {
+            txt.setText("");
+            return;
+        }
+
         String newDescription = Description.replace('[', '<').replace(']', '>');
 
         Spanned spanned = Html.fromHtml(newDescription, null, customTagHandler);

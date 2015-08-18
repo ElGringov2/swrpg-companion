@@ -11,7 +11,9 @@ import android.util.Base64;
 import android.util.Log;
 
 import com.dragonrider.swrpgcompanion.R;
+import com.dragonrider.swrpgcompanion.Scenario.Campaign;
 import com.dragonrider.swrpgcompanion.Scenario.FightScenarioItem;
+import com.dragonrider.swrpgcompanion.Scenario.Scenario;
 import com.dragonrider.swrpgcompanion.Scenario.ScenarioItem;
 import com.dragonrider.swrpgcompanion.Scenario.TextScenarioItem;
 import com.dragonrider.swrpgcompanion.XWingWrapper.FiringArcs;
@@ -1438,96 +1440,115 @@ public class XmlImport {
     }
 
 
+    public static Campaign ImportCampaign(String pFilename) {
+         try {
+             Campaign mCampaign = new Campaign();
+             XmlPullParserFactory factory;
+
+
+             factory = XmlPullParserFactory.newInstance();
+             factory.setNamespaceAware(true);
+             XmlPullParser xpp = factory.newPullParser();
+
+             xpp.setInput(new FileReader(pFilename));
 
 
 
-    public static List<ScenarioItem> ImportScenarioFile(String filename) {
+             int eventType = xpp.getEventType();
+
+             Scenario mScenario = new Scenario();
+             int iScenarioDurationCount = 0;
+
+             while (eventType != XmlPullParser.END_DOCUMENT) {
+
+                 String sTagName = xpp.getName();
+
+                 if (sTagName == null) {
+                     xpp.next();
+                     eventType = xpp.getEventType();
+                     continue;
+                 }
+
+                 if (sTagName.equals("Campaign") && eventType == XmlPullParser.START_TAG) {
+
+                     mCampaign.setCampaignName(xpp.getAttributeValue(0));
+                 }
+
+                 if (sTagName.equals("Scenario") && eventType == XmlPullParser.START_TAG)
+                     mScenario = new Scenario().setName(xpp.getAttributeValue(0));
 
 
-        XmlPullParserFactory factory;
+
+                 if (sTagName.equals("Scenario") && eventType == XmlPullParser.END_TAG) {
+                     int iDuration = 0;
+                     if (mScenario != null)
+                         for (ScenarioItem item : mScenario.getItems()) {
+                             int iCurrentDuration = item.getDuration();
+                             item.setDuration(iDuration);
+                             iDuration += iCurrentDuration;
+                         }
+
+                     mCampaign.getScenarios().add(mScenario);
+
+                 }
+
+                 if (sTagName.equals("ScenarioItem") && mScenario != null && eventType == XmlPullParser.START_TAG)
+                     mScenario.getItems().add(getScenarioItem(xpp));
 
 
-        List<ScenarioItem> items = new ArrayList<>();
 
 
-        try {
+                 eventType = xpp.next();
 
-            factory = XmlPullParserFactory.newInstance();
-            factory.setNamespaceAware(true);
-            XmlPullParser xpp = factory.newPullParser();
+             }
 
+             return mCampaign;
+         }
+         catch (Exception e) {
+             e.printStackTrace();
+             return null;
+         }
 
-            xpp.setInput(new FileReader(filename));
-
-
-            int eventType = xpp.getEventType();
-
-
-            while (eventType != XmlPullParser.END_DOCUMENT) {
-
-                if (eventType == XmlPullParser.START_TAG) {
-                    String sTagName = xpp.getName();
-
-                    if (sTagName == null)
-                        continue;
-
-                    if (sTagName.equals("FightScenarioItem"))
-                        items.add(getFightScenarioItem(xpp));
-                    if (sTagName.equals("TextScenarioItem"))
-                        items.add(getTextScenarioItem(xpp));
-
-
-                }
-
-                eventType = xpp.next();
-            }
-        } catch (Exception e) {
-            e.fillInStackTrace();
-        }
-
-        return items;
     }
 
-    private static ScenarioItem getFightScenarioItem(XmlPullParser xpp) throws IOException, XmlPullParserException {
 
-        FightScenarioItem fightScenarioItem = new FightScenarioItem();
+
+    private static ScenarioItem getScenarioItem(XmlPullParser xpp) throws IOException, XmlPullParserException {
+
+        ScenarioItem ScenarioItem ;
+        if (xpp.getAttributeValue(0).equals("TextScenarioItem"))
+            ScenarioItem = new TextScenarioItem();
+        else if (xpp.getAttributeValue(0).equals("FightScenarioItem"))
+            ScenarioItem = new FightScenarioItem();
+        else
+            return null;
+
+
+
+        for (int i = 1; i < xpp.getAttributeCount(); i++) {
+            if (xpp.getAttributeName(i).equals("Name"))
+                ScenarioItem.setName(xpp.getAttributeValue(i));
+            if (xpp.getAttributeName(i).equals("Location"))
+                ScenarioItem.setLocation(xpp.getAttributeValue(i));
+            if (xpp.getAttributeName(i).equals("Duration"))
+                ScenarioItem.setDuration(Integer.valueOf(xpp.getAttributeValue(i)));
+        }
 
         int eventType = xpp.next();
 
 
+        while (!(eventType == XmlPullParser.END_TAG && xpp.getName().equals("ScenarioItem"))) {
 
-        while (!(eventType == XmlPullParser.END_TAG && xpp.getName().equals("FightScenarioItem"))) {
 
-            if (eventType == XmlPullParser.START_TAG && xpp.getName() != null && xpp.getName().equals("Name"))
-                fightScenarioItem.Name = getContent(xpp);
+            if (eventType == XmlPullParser.START_TAG && xpp.getName() != null && xpp.getName().equals("Text"))
+                ((TextScenarioItem)ScenarioItem).Text = getContent(xpp);
             if (eventType == XmlPullParser.START_TAG && xpp.getName() != null && xpp.getName().equals("Filename"))
-                fightScenarioItem.encounterFilename = getContent(xpp);
+                ((FightScenarioItem)ScenarioItem).setEncounterFilename(getContent(xpp));
 
             eventType = xpp.next();
         }
 
-        return fightScenarioItem;
-    }
-
-    private static ScenarioItem getTextScenarioItem(XmlPullParser xpp) throws IOException, XmlPullParserException {
-
-        TextScenarioItem textScenarioItem = new TextScenarioItem();
-
-        int eventType = xpp.next();
-
-
-
-        while (!(eventType == XmlPullParser.END_TAG && xpp.getName().equals("FightScenarioItem"))) {
-
-            if (eventType == XmlPullParser.START_TAG && xpp.getName() != null && xpp.getName().equals("Name"))
-                textScenarioItem.Name = getContent(xpp);
-            if (eventType == XmlPullParser.START_TAG && xpp.getName() != null && xpp.getName().equals("Filename"))
-                textScenarioItem.Text = getContent(xpp);
-
-            eventType = xpp.next();
-        }
-
-        return textScenarioItem;
+        return ScenarioItem;
     }
 
     public static ArrayList<Vehicle> ImportVehicles(File directory,

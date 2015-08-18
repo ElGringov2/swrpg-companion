@@ -58,6 +58,9 @@ public class MainMenuItem {
         return new MainMenuItem().setSpecialID(2);
     }
 
+    public static MainMenuItem PrepareScenariosSpecialMenuItem() {
+        return new MainMenuItem().setSpecialID(3);
+    }
 
     @Override
          public boolean equals(Object o) {
