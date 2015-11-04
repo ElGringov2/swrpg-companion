@@ -78,6 +78,10 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
     //Liste des véhicules
     private List<VehicleFighter> Fighters;
 
+    public List<VehicleFighter> getFighters() {
+        return Fighters;
+    }
+
     private Context mContext;
 
     /**
@@ -401,9 +405,11 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
         private ImageView SilhouetteImageView;
         private ImageView IconImageView;
         private Button btnDamage;
-        private Button btnDefense;
+
         private Button btnEnergy;
         private TextView SquadronNumber;
+        private ImageView ManeuverImage;
+        private TextView ManeuverSpeed;
         private TextView EnergyInfo;
         private View vOverflow;
 
@@ -429,10 +435,11 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
             SilhouetteImageView = (ImageView)itemView.findViewById(R.id.SilhouetteImageView);
             IconImageView = (ImageView)itemView.findViewById(R.id.IconImageView);
             btnDamage = (Button)itemView.findViewById(R.id.btnDamage);
-            btnDefense = (Button)itemView.findViewById(R.id.btnSwitchDefense);
             btnEnergy = (Button)itemView.findViewById(R.id.btnEnergy);
             crewLayout = (LinearLayout)itemView.findViewById(R.id.lstCrew);
             SquadronNumber = (TextView)itemView.findViewById(R.id.txtSquadronNumber);
+            ManeuverImage = (ImageView)itemView.findViewById(R.id.ManeuverImage);
+            ManeuverSpeed = (TextView)itemView.findViewById(R.id.ManeuverSpeed);
             EnergyInfo = (TextView)itemView.findViewById(R.id.txtEnergy);
             vOverflow = itemView.findViewById(R.id.mnuOverflow);
 
@@ -461,11 +468,19 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
             HullTrauma.setMax(fighter.getTotalHullTrauma());
             HullTrauma.setProgress(fighter.getActualHullTrauma());
             HullTraumaValue.setText(String.valueOf(fighter.getActualHullTrauma()));
-            SquadronNumber.setText(String.valueOf(FighterID+1));
+            SquadronNumber.setText(String.valueOf(FighterID + 1));
             EnergyInfo.setText(String.format("Armes: %d Boucliers: %d Moteurs: %d", fighter.getActualWeaponsEnergy(), fighter.getActualShieldEnergy(), fighter.getActualEngineEnergy()));
             SilhouetteImageView.setImageBitmap(fighter.getBaseVehicle().getImageSilhouette());
             IconImageView.setImageBitmap(fighter.getBaseVehicle().getImageIcon());
 
+            int[][] man = ManeuverInfos.getManeuvers(fighter.getBaseVehicle().getManeuverMapName());
+            if (fighter.getSelectedManeuver() != -1)
+            {
+                int diff = man[fighter.getSelectedSpeed()][fighter.getSelectedManeuver()];
+                if (diff != 0)
+                    ManeuverImage.setImageResource(ManeuverInfos.GetManeuverRessource(fighter.getSelectedManeuver(), diff - 1));
+                ManeuverSpeed.setText(String.valueOf(fighter.getSelectedSpeed()));
+            }
 
             crewLayout.removeAllViews();
             DisplayMetrics metrics = crewLayout.getContext().getResources().getDisplayMetrics();
@@ -548,10 +563,10 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
 
 
 
-            btnDefense.setOnClickListener(new View.OnClickListener() {
+            SilhouetteImageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    DefenseSwitchPopup.Show(btnDefense.getContext(), Fighters.get(FighterID), new DefenseSwitchPopup.onValidatePopupListener() {
+                    DefenseSwitchPopup.Show(SilhouetteImageView.getContext(), Fighters.get(FighterID), new DefenseSwitchPopup.onValidatePopupListener() {
                         @Override
                         public void onValidatePopup() {
                             VehicleFighterAdapter.this.FinalNotifyDataSetChanged();

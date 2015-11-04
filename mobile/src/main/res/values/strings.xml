@@ -96,5 +96,7 @@
     <string name="breach">Breach</string>
     <string name="use_parry">Utiliser Parade?</string>
     <string name="use_reflect">Utiliser Reflexion?</string>
+    <string name="title_activity_vehicule_planification">Phase de Planification</string>
+    <string name="title_activity_capital_ship_manager">CapitalShipManagerActivity</string>
 
 </resources>

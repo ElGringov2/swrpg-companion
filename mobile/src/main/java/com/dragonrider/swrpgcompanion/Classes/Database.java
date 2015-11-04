@@ -26,7 +26,7 @@ import java.util.List;
 
 public class Database extends SQLiteOpenHelper {
 
-	public static final int DATABASE_VERSION = 6;
+	public static final int DATABASE_VERSION = 7;
 	
 	public Database(Context context) {
 		super(context, "sweote.db", null, DATABASE_VERSION) ;
@@ -38,7 +38,7 @@ public class Database extends SQLiteOpenHelper {
 		android.util.Log.d("database", "OnCreate");
 		db.execSQL("create table NPC (id integer primary key autoincrement, Name text, Key text, Description text, Race text, Experience integer(5), Category text, TotalWounds integer(2), TotalStrain integer(2), Type integer(1), Soak integer(1), MeleeDefense integer(1), RangedDefense integer(1), ForceRating integer(2), SkillText text, CharacteristicText text, TalentText text, AbilitiesText text, WeaponText text, ForcePowers text, Image blob )");
 		db.execSQL("create table PLAYERS (id integer primary key autoincrement, PlayerName text, CharacterName text, Experience integer(5), IsPresent integer, Image blob)");
-        db.execSQL("create table VEHICLES (id integer primary key autoincrement, Key text, Name text, Type text, Silhouette integer(2), Speed integer(2), Handling integer(2), DefFore integer(2), DefAft integer(2), DefPort integer(2), DefStarboard integer(2), Armor integer(2), HullTrauma integer(3), SystemStrain integer(3), Weapons text, Categories text, ImageIcon blob, ImageSilhouette blob)");
+        db.execSQL("create table VEHICLES (id integer primary key autoincrement, Key text, Name text, ManeverMapName text, Type text, Silhouette integer(2), Speed integer(2), Handling integer(2), DefFore integer(2), DefAft integer(2), DefPort integer(2), DefStarboard integer(2), Armor integer(2), HullTrauma integer(3), SystemStrain integer(3), Weapons text, Categories text, ImageIcon blob, ImageSilhouette blob)");
 	}
 	
 	
@@ -54,6 +54,8 @@ public class Database extends SQLiteOpenHelper {
             db.execSQL("ALTER TABLE NPC ADD ForcePowers text");
         if (oldVersion == 5 && newVersion == 6)
             db.execSQL("create table VEHICLES (id integer primary key autoincrement, Key text, Name text, Type text, Silhouette integer(2), Speed integer(2), Handling integer(2), DefFore integer(2), DefAft integer(2), DefPort integer(2), DefStarboard integer(2), Armor integer(2), HullTrauma integer(3), SystemStrain integer(3), Weapons text, Categories text, ImageIcon blob, ImageSilhouette blob)");
+		if (oldVersion == 5 && newVersion == 7)
+			db.execSQL("ALTER TABLE VEHICLES ADD ManeverMapName text");
 
 
 
@@ -607,7 +609,7 @@ public class Database extends SQLiteOpenHelper {
 
             String sql = "UPDATE VEHICLES SET ";
 
-            sql += "Key=?, Name=?, Type=?, Silhouette=?, Speed=?, Handling=?, DefFore=?, DefAft=?, DefPort=?, DefStarboard=?, Armor=?, HullTrauma=?, SystemStrain=?, Weapons=?, Categories=?, ImageIcon=?, ImageSilhouette=? WHERE id=?";
+            sql += "Key=?, Name=?, Type=?, Silhouette=?, Speed=?, Handling=?, DefFore=?, DefAft=?, DefPort=?, DefStarboard=?, Armor=?, HullTrauma=?, SystemStrain=?, Weapons=?, Categories=?, ManeverMapName=?, ImageIcon=?, ImageSilhouette=? WHERE id=?";
 
             SQLiteStatement statement = sb.compileStatement(sql);
 
@@ -640,10 +642,11 @@ public class Database extends SQLiteOpenHelper {
             statement.bindLong(12, vehicle.getHullTrauma());
             statement.bindLong(13, vehicle.getSystemStrain());
             statement.bindString(14, weaponText);
-            statement.bindString(15, categories);
-            statement.bindBlob(16, vehicle.getImageIconData());
-            statement.bindBlob(17, vehicle.getImageSilhouetteData());
-            statement.bindLong(18, vehicle.getDatabaseID());
+			statement.bindString(15, categories);
+			statement.bindString(16, vehicle.getManeuverMapName());
+            statement.bindBlob(17, vehicle.getImageIconData());
+            statement.bindBlob(18, vehicle.getImageSilhouetteData());
+            statement.bindLong(19, vehicle.getDatabaseID());
 
             statement.executeUpdateDelete();
 
@@ -662,7 +665,7 @@ public class Database extends SQLiteOpenHelper {
 
         String sql = "INSERT INTO VEHICLES (";
 
-        sql += "'Key', 'Name', 'Type', 'Silhouette', 'Speed', 'Handling', 'DefFore', 'DefAft', 'DefPort', 'DefStarboard', 'Armor', 'HullTrauma', 'SystemStrain', 'Weapons', 'Categories', 'ImageIcon', 'ImageSilhouette') ";
+        sql += "'Key', 'Name', 'Type', 'Silhouette', 'Speed', 'Handling', 'DefFore', 'DefAft', 'DefPort', 'DefStarboard', 'Armor', 'HullTrauma', 'SystemStrain', 'Weapons', 'Categories', 'ManeverMapName', 'ImageIcon', 'ImageSilhouette') ";
 
         String weaponText = "";
         for (VehicleWeapon w : vehicle.getWeapons())
@@ -677,7 +680,7 @@ public class Database extends SQLiteOpenHelper {
         }
 
 
-        sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        sql += "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         SQLiteStatement statement = sb.compileStatement(sql);
 
@@ -697,9 +700,10 @@ public class Database extends SQLiteOpenHelper {
         statement.bindLong(12, vehicle.getHullTrauma());
         statement.bindLong(13, vehicle.getSystemStrain());
         statement.bindString(14, weaponText);
-        statement.bindString(15, categories);
-        statement.bindBlob(16, vehicle.getImageIconData());
-        statement.bindBlob(17, vehicle.getImageSilhouetteData());
+		statement.bindString(15, categories);
+		statement.bindString(16, vehicle.getManeuverMapName());
+        statement.bindBlob(17, vehicle.getImageIconData());
+        statement.bindBlob(18, vehicle.getImageSilhouetteData());
 
 
         statement.executeUpdateDelete();
@@ -734,7 +738,8 @@ public class Database extends SQLiteOpenHelper {
                 .setDatabaseID(c.getInt(c.getColumnIndex("id")))
                 .setKey(c.getString(c.getColumnIndex("Key")))
                 .setName(c.getString(c.getColumnIndex("Name")))
-                .setType(c.getString(c.getColumnIndex("Type")))
+				.setManeuverMapName(c.getString(c.getColumnIndex("ManeverMapName")))
+				.setType(c.getString(c.getColumnIndex("Type")))
                 .setSilhouette(c.getInt(c.getColumnIndex("Silhouette")))
                 .setSpeed(c.getInt(c.getColumnIndex("Speed")))
                 .setHandling(c.getInt(c.getColumnIndex("Handling")))

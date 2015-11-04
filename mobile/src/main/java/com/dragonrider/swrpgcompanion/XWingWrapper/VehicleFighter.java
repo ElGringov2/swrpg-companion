@@ -32,6 +32,9 @@ public class VehicleFighter {
 
     private Vehicle baseVehicle;
 
+    private int selectedManeuver = -1;
+    private int selectedSpeed = -1;
+
 
     private List<CrewWrapper> crew = new ArrayList<>();
 
@@ -402,5 +405,21 @@ public class VehicleFighter {
         }
 
         return clone;
+    }
+
+    public int getSelectedManeuver() {
+        return selectedManeuver;
+    }
+
+    public void setSelectedManeuver(int selectedManeveur) {
+        this.selectedManeuver = selectedManeveur;
+    }
+
+    public int getSelectedSpeed() {
+        return selectedSpeed;
+    }
+
+    public void setSelectedSpeed(int selectedSpeed) {
+        this.selectedSpeed = selectedSpeed;
     }
 }

@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -24,6 +25,10 @@ import java.util.Objects;
 public class VehicleFightActivity extends Activity {
 
     static VehicleFighterAdapter adapter;
+
+    public static VehicleFighterAdapter getAdapter() {
+        return adapter;
+    }
 
     public static void ClearFight() {
 
@@ -131,4 +136,9 @@ public class VehicleFightActivity extends Activity {
     }
 
 
+    public void mnuPlan_Click(MenuItem item) {
+        Intent intent = new Intent(this, VehiculePlanification.class);
+        startActivity(intent);
+
+    }
 }

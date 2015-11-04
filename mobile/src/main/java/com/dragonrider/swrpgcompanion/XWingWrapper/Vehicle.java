@@ -20,6 +20,7 @@ public class Vehicle {
     private String Key ;
     private String Name ;
     private String Type ;
+    private String ManeuverMapName = "";
     private int Silhouette ;
     private int Speed ;
     private int Handling ;
@@ -289,5 +290,14 @@ public class Vehicle {
         s = (s + "!!!").replace(", !!!", "").replace("!!!", "");
 
         return s;
+    }
+
+    public String getManeuverMapName() {
+        return ManeuverMapName;
+    }
+
+    public Vehicle setManeuverMapName(String maneuverMapName) {
+        ManeuverMapName = maneuverMapName;
+        return this;
     }
 }

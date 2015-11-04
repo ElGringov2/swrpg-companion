@@ -1619,6 +1619,8 @@ public class XmlImport {
                         String value = getContent(xpp).replace("+", "");
                         vehicle.setHandling(Integer.valueOf(value));
                     }
+                    if (sTagName.equals("Maneuvers"))
+                        vehicle.setManeuverMapName(getContent(xpp));
                     if (sTagName.equals("DefFore"))
                         vehicle.setDefFore(getIntegerContent(xpp));
                     if (sTagName.equals("DefAft"))
