@@ -10,6 +10,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.EditText;
 
 import com.dragonrider.swrpgcompanion.R;
@@ -70,6 +71,21 @@ public class VehicleFightActivity extends Activity {
         initiativeRecyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false));
 
         initiativeRecyclerView.setAdapter(adapter.getInitiativeAdapter(this));
+
+
+        findViewById(R.id.ButtonEnergy).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                adapter.EnergyStep(VehicleFightActivity.this);
+            }
+        });
+        findViewById(R.id.ButtonPlan).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent intent = new Intent(VehicleFightActivity.this, VehiculePlanification.class);
+                startActivity(intent);
+            }
+        });
 
     }
 
