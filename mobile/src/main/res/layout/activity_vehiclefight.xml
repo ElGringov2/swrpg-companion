@@ -68,6 +68,44 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        
+        <ToggleButton
+            android:id="@+id/ButtonPlan"
+            android:textOn="Planification"
+            android:textOff="Planification"
+            android:textSize="8sp"
+            android:checked="true"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <ToggleButton
+            android:id="@+id/ButtonMove"
+            android:textSize="8sp"
+            android:textOn="Mouvement"
+            android:textOff="Mouvement"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <ToggleButton
+            android:id="@+id/ButtonEnergy"
+            android:textSize="8sp"
+            android:textOn="Energie"
+            android:textOff="Energie"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+        <ToggleButton
+            android:id="@+id/ButtonFight"
+            android:textSize="8sp"
+            android:textOn="Combat"
+            android:textOff="Combat"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content" />
+    </LinearLayout>
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/RecyclerView"

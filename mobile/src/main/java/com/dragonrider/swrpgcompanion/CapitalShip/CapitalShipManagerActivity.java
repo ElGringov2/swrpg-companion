@@ -1,5 +1,6 @@
 package com.dragonrider.swrpgcompanion.CapitalShip;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -10,7 +11,7 @@ import android.view.MenuItem;
 
 import com.dragonrider.swrpgcompanion.R;
 
-public class CapitalShipManagerActivity extends ActionBarActivity {
+public class CapitalShipManagerActivity extends Activity {
 
     public static CapitalShip SelectedShip;
 
