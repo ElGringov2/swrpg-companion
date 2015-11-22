@@ -146,7 +146,7 @@ public class CapitalShipCrewAdapter extends RecyclerView.Adapter<CapitalShipCrew
                 crewLayout.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //TODO Mettre en place le popup de déplacement
+                        //TODO Mettre en place le popup de dÃ©placement
                     }
                 });
             }

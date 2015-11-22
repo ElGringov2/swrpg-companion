@@ -102,6 +102,10 @@
             android:name=".CapitalShip.CapitalShipManagerActivity"
             android:label="@string/title_activity_capital_ship_manager" >
         </activity>
+        <activity
+            android:name=".XWingWrapper.ShipEditorActivity"
+            android:label="@string/title_activity_ship_editor" >
+        </activity>
     </application>
 
 </manifest>

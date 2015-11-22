@@ -17,12 +17,6 @@
         android:icon="@drawable/ic_action_save"
         android:title="@string/save_as"
         android:onClick="mnuSaveAs_Click"/>
-    <item android:id="@+id/mnuEnergy"
-        android:title="@string/energy"
-        android:onClick="mnuEnergy_Click"/>
-    <item android:id="@+id/mnuPlan"
-    android:title="@string/planificationphase"
-    android:onClick="mnuPlan_Click"/>
     <item android:id="@+id/mnuNextRound"
         android:title="@string/next_round"
         android:onClick="mnuNextRound_Click"

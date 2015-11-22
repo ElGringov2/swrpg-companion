@@ -5,6 +5,7 @@ import android.util.JsonReader;
 import android.util.JsonWriter;
 
 import com.dragonrider.swrpgcompanion.Classes.Database;
+import com.dragonrider.swrpgcompanion.Classes.InitiativeAdapter;
 import com.dragonrider.swrpgcompanion.Classes.NPC;
 import com.dragonrider.swrpgcompanion.Classes.RollResult;
 import com.dragonrider.swrpgcompanion.Classes.Skill;
@@ -51,7 +52,7 @@ public class VehicleFighter {
             String name = reader.nextName();
             if (name.startsWith("crew")) {
                 reader.beginObject();
-                CrewWrapper wrapper = new CrewWrapper(null, false, false);
+                final CrewWrapper wrapper = new CrewWrapper(null, false, false);
                 while (reader.hasNext()) {
                     switch (reader.nextName()) {
                         case "isOnPlayerSlot":
@@ -64,14 +65,22 @@ public class VehicleFighter {
                                     wrapper.baseNPC = npc;
                                     wrapper.isPlayer = true;
                                     PlayerList.remove(npc);
+
                                     break;
-                            }
+                                }
                             break;
                         case "NPC":
                             wrapper.baseNPC = db.GetNPCbyID(reader.nextInt());
+                            RollResult rr = wrapper.baseNPC.getSkillRoll(Skill.Skills.cool);
+
+                            wrapper.initiative = new Initiative();
+                            wrapper.initiative.Advantages = rr.Advantage();
+                            wrapper.initiative.Success = rr.Succcess();
+                            wrapper.initiative.Triumph = rr.Triumph();
                             break;
                     }
                 }
+
                 fighter.getCrew().add(wrapper);
 
                 reader.endObject();
@@ -130,7 +139,7 @@ public class VehicleFighter {
             writer.name("crew" + String.valueOf(crew.indexOf(crewWrapper)));
             writer.beginObject();
             writer.name("isOnPlayerSlot").value(crewWrapper.isOnPlayerSlot);
-            if (crewWrapper.isOnPlayerSlot)
+            if (crewWrapper.isPlayer)
                 writer.name("PlayerName").value(crewWrapper.baseNPC.OwnerName);
             else
                 writer.name("NPC").value(crewWrapper.baseNPC.DatabaseID);

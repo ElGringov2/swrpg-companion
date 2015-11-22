@@ -6,7 +6,6 @@
     <string name="strain">Stress</string>
     <string name="soak">Encaissement</string>
     <string name="defense">Défense</string>
-    <string name="energy">Energie</string>
     <string name="meleedefense">Défense CàC</string>
     <string name="rangeddefense">Défense Distance</string>
     
@@ -35,7 +34,7 @@
     <string name="set_as_ennemy">Définir comme ennemi</string>
     <string name="pierce">Pierce</string>
     <string name="remove_dead_player">Supprimer un personnage à terre</string>
-    <string name="remove_dead_player_question">Supprimer le personnage à terre du combat?</string>
+    <string name="remove_dead_player_question" formatted="false">Supprimer %s du combat?</string>
 
 
 </resources>

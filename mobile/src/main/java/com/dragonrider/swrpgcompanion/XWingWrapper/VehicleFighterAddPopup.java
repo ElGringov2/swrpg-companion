@@ -22,21 +22,40 @@ import java.util.List;
  */
 public class VehicleFighterAddPopup {
 
-    public static void Show(Context context, final onSelectVehicleListener listener) {
+
+    public static void Show(Context context, onSelectVehicleListener listener) {
+        Show(context, listener, true);
+    }
+
+    public static void Show(Context context, final onSelectVehicleListener listener, boolean OnlyXWing) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
 
         Database db = new Database(context);
 
 
-        final Adapter adapter = new Adapter(db.getXWingVehicles());
+        if (OnlyXWing) {
 
-        builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                listener.onSelectVehicle((Vehicle)(adapter).getItem(which));
-                dialog.dismiss();
-            }
-        });
+            final Adapter adapter = new Adapter(db.getXWingVehicles());
+
+            builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    listener.onSelectVehicle((Vehicle) (adapter).getItem(which));
+                    dialog.dismiss();
+                }
+            });
+        }
+        else {
+            final Adapter adapter = new Adapter(db.getAllVehicles());
+
+            builder.setAdapter(adapter, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    listener.onSelectVehicle((Vehicle) (adapter).getItem(which));
+                    dialog.dismiss();
+                }
+            });
+        }
 
 
 
@@ -54,7 +73,7 @@ public class VehicleFighterAddPopup {
 
 
     public interface onSelectVehicleListener {
-        public void onSelectVehicle(Vehicle vehicle);
+        void onSelectVehicle(Vehicle vehicle);
     }
 
 

@@ -146,7 +146,7 @@ public class VehicleWeapon {
         return  weapon;
     }
 
-    public void setBaseWeapon(Weapon weapon) {
+    public VehicleWeapon setBaseWeapon(Weapon weapon) {
         if (weapon != null) {
             this.Damage = weapon.Damage;
             this.Critical = weapon.CriticalValue;
@@ -157,6 +157,8 @@ public class VehicleWeapon {
             this.Critical = 99;
             this.Name = "";
         }
+
+        return this;
     }
 
     public boolean isUsed() {

@@ -14,7 +14,7 @@
 
     <string name="activity_vehiclefight">Combat X-Wing</string>
     <string name="select_gunner">Sélectionnez le tireur:</string>
-    <string name="save_as">Enregistrer sous...</string>
+    <string name="save_as">Enregistrer sous…</string>
 
     <string name="shields">Boucliers</string>
     <string name="engines">Moteurs</string>
@@ -22,7 +22,23 @@
     <string name="zero_damage">0 dégâts</string>
     <string name="duplicate">Dupliquer</string>
     <string name="target_has_no_hull_remove_question">La cible n\'as plus de coque. La supprimer du combat?</string>
-    <string name="planificationphase">Phase de Planification</string>
+    <string name="phase_plan">Plan.</string>
+    <string name="phase_man">Man.</string>
+    <string name="phase_ener">Ener.</string>
+    <string name="phase_mov">Mouv.</string>
+    <string name="phase_act">Action</string>
+    <string name="phase_maneuver">Phase de Manoeuvres</string>
+    <string name="phase_energy">Phase d\'Energie</string>
+    <string name="phase_movement">Phase de Mouvement</string>
+    <string name="phase_action">Phase d\'Action</string>
+    <string name="phase_planification">Phase de Planification</string>
+    <string name="energy">Energie</string>
+    <string name="SetAsAllyOrEnnemy">Définir comme Allié/Ennemi</string>
+    <string name="openvehicle">Ouvrir un vaisseau</string>
+
+    <string name="shipname">Nom</string>
+    <string name="shipcategory">Catégories</string>
+    <string name="shipArmor">Armure</string>
 
 
 </resources>

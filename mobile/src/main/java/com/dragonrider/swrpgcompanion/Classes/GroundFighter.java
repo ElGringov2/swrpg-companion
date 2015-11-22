@@ -559,7 +559,7 @@ public class GroundFighter {
         chkUseReflect.setOnClickListener(listener);
 
         listener.onClick(null);
-		
+
 		new AlertDialog.Builder(context)
 		.setTitle("Infliger des dégâts")
 		.setView(baseView)
@@ -625,8 +625,8 @@ public class GroundFighter {
 
             }
         }).show();
-		
-				
+
+
 	}
 
     private void applyDamage(final int damage, final int strain, int critical, final Context context, final GenericEditor.IOnPopupClosed onPopupClosed) {
@@ -685,7 +685,7 @@ public class GroundFighter {
             .show();
         }
 
-        onPopupClosed.OnClosed();
+        //onPopupClosed.OnClosed();
 
 
     }

@@ -5,7 +5,9 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.support.v7.widget.RecyclerView;
 
 import com.dragonrider.swrpgcompanion.GroundFightActivities.GroundFighterAdapter;
@@ -290,8 +292,34 @@ public class GroundFightScene {
 	}
 
 	public static void NextRound() {
-		for (GroundFighter fighter : Fighters)
-			fighter.Played = -1;
+		for (final GroundFighter fighter : Fighters) {
+            fighter.Played = -1;
+            if (fighter.getCount() == 0) {
+                new AlertDialog.Builder(actualContext)
+                        .setTitle(R.string.remove_dead_player)
+                        .setMessage(actualContext.getString(R.string.remove_dead_player_question, fighter.getFullName()))
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                if (fighter.isPlayer)
+                                    GroundFightScene.Players.add(fighter.getBase());
+
+                                Fighters.remove(fighter);
+                                initiativeAdapter.updateData(Fighters);
+                                MainAdapter.notifyDataSetChanged();
+                                dialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                            }
+
+                        })
+                        .show();
+            }
+        }
 
         initiativeAdapter.updateData(Fighters);
         MainAdapter.notifyDataSetChanged();

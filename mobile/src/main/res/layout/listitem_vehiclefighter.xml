@@ -192,25 +192,19 @@
 
                 <ImageView
                     android:id="@+id/ManeuverImage"
-                    android:layout_width="53dp"
-                    android:layout_height="53dp" />
+                    android:layout_width="48dp"
+                    android:layout_height="48dp" />
 
                 <TextView
                     android:id="@+id/ManeuverSpeed"
                     android:gravity="center"
                     android:textSize="43sp"
-                    android:layout_width="53dp"
-                    android:layout_height="53dp" />
-
-
-                <!--<Button-->
-                    <!--android:id="@+id/btnSwitchDefense"-->
-                    <!--android:text="@string/defense"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content" />-->
+                    android:layout_width="48dp"
+                    android:layout_height="48dp" />
 
 
                 <Button
+                    style="?android:attr/buttonBarButtonStyle"
                     android:layout_gravity="center"
                     android:id="@+id/btnDamage"
                     android:text="@string/weapon_damage"
@@ -218,6 +212,7 @@
                     android:layout_height="wrap_content" />
 
                 <Button
+                    style="?android:attr/buttonBarButtonStyle"
                     android:layout_gravity="center"
                     android:id="@+id/btnEnergy"
                     android:text="@string/energy"
@@ -227,8 +222,8 @@
                 <ImageView
                     android:layout_gravity="center"
                     android:id="@+id/mnuOverflow"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_width="53dp"
+                    android:layout_height="48dp"
                     android:src="@drawable/ic_action_overflow"
                     />
 

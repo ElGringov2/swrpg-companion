@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    >
+
+    <item android:id="@+id/mnuNewShip"
+        android:title="@string/openvehicle"
+        android:onClick="mnuNewShip"/>
+    <item android:id="@+id/mnuOpenFromDatabase"
+        android:title="@string/openvehicle"
+        android:onClick="mnuOpenFromDatabaseClick"/>
+    <item android:id="@+id/mnuSave"
+        android:title="@string/save"
+        android:onClick="mnuSaveClick"/>
+</menu>

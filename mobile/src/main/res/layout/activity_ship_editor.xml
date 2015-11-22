@@ -1,0 +1,162 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    tools:context="com.dragonrider.swrpgcompanion.XWingWrapper.ShipEditorActivity">
+
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <GridLayout
+            android:id="@+id/GridLayout"
+            android:columnCount="2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="@string/shipname"
+                android:layout_gravity="center"
+                android:labelFor="@+id/txtName"/>
+            <EditText
+                android:layout_gravity="fill"
+                android:id="@+id/txtName"
+                android:inputType="text"/>
+
+
+            <TextView
+                android:text="@string/shipcategory"
+                android:layout_margin="2dp"
+                android:layout_gravity="center"
+                android:labelFor="@+id/txtCategory"/>
+            <EditText
+                android:layout_gravity="fill"
+                android:id="@+id/txtCategory"
+                android:inputType="text"/>
+
+
+            <TextView
+                android:text="@string/shipArmor"
+                android:layout_gravity="center"
+                android:labelFor="@+id/txtArmor"/>
+            <EditText
+                android:layout_gravity="fill"
+                android:id="@+id/txtArmor"
+                android:inputType="number"/>
+
+            <TextView
+                android:text="Manoeuvrabilité"
+                android:layout_gravity="center"
+                android:labelFor="@+id/txtManever"/>
+            <EditText
+                android:layout_gravity="fill"
+                android:id="@+id/txtManever"
+                android:inputType="numberSigned"/>
+
+            <TextView
+                android:text="Silhouette"
+                android:layout_gravity="center"
+                android:labelFor="@+id/txtSilhouette"/>
+            <EditText
+                android:layout_gravity="fill"
+                android:id="@+id/txtSilhouette"
+                android:inputType="number"/>
+
+            <TextView
+                android:text="Vitesse max"
+                android:layout_gravity="center"
+                android:labelFor="@+id/txtSpeed"/>
+            <EditText
+                android:layout_gravity="fill"
+                android:id="@+id/txtSpeed"
+                android:inputType="number"/>
+
+            <TextView
+                android:text="Coque"
+                android:layout_gravity="center"
+                android:labelFor="@+id/txtSilhouette"/>
+            <EditText
+                android:layout_gravity="fill"
+                android:id="@+id/txtHull"
+                android:inputType="number"/>
+
+            <TextView
+                android:text="Stress"
+                android:layout_gravity="center"
+                android:labelFor="@+id/txtSilhouette"/>
+            <EditText
+                android:layout_gravity="fill"
+                android:id="@+id/txtStrain"
+                android:inputType="number"/>
+
+
+
+            <TextView
+                android:layout_columnSpan="2"
+                android:text="Défense:"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+
+
+
+
+            <TextView android:text="Proue" android:layout_gravity="center"/>
+
+            <EditText android:id="@+id/txtProue"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:inputType="number"/>
+            <TextView android:text="Poupe" android:layout_gravity="center"/>
+            <EditText android:id="@+id/txtPoupe"
+                android:layout_gravity="fill"
+                android:layout_columnWeight="1"
+                android:inputType="number"/>
+            <TextView android:text="Babord" android:layout_gravity="center"/>
+            <EditText android:id="@+id/txtBabord"
+                android:layout_columnWeight="1"
+                android:layout_gravity="fill"
+                android:inputType="number"/>
+            <TextView android:text="Tribord" android:layout_gravity="center"/>
+            <EditText android:id="@+id/txtTribord"
+                android:layout_gravity="fill"
+                android:layout_columnWeight="1"
+                android:inputType="number"/>
+
+        </GridLayout>
+
+        <TextView
+            android:text="Armement"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <Button
+                android:id="@+id/btnAddWeapon"
+                style="?android:attr/buttonBarButtonStyle"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text="Ajouter une arme"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/WeaponList"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </LinearLayout>
+
+    </LinearLayout>
+</ScrollView>
+

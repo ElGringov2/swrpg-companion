@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GridLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:columnCount="2">
+
+
+    <TextView android:text="Nom" android:layout_gravity="center" />
+    <EditText android:id="@+id/txtName" android:inputType="text" android:layout_gravity="fill" />
+
+
+    <TextView android:text="Nombre" android:layout_gravity="center" />
+    <EditText android:id="@+id/txtCount" android:inputType="number" android:layout_gravity="fill" />
+
+    <TextView android:text="Dégâts" android:layout_gravity="center" />
+    <EditText android:id="@+id/txtDamage" android:inputType="number" android:layout_gravity="fill" />
+
+    <TextView android:text="Critique" android:layout_gravity="center" />
+    <EditText android:id="@+id/txtCritical" android:inputType="number" android:layout_gravity="fill" />
+
+
+
+
+</GridLayout>

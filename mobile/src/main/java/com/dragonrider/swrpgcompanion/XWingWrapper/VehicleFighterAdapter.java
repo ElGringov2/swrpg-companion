@@ -100,6 +100,48 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
     public List<NPC> Players;
 
 
+    /**
+     * Obtient les pilotes des vaisseaux (premiers dans la liste)
+     * @return
+     */
+    public List<CrewWrapper> getPilots() {
+
+        ArrayList<CrewWrapper> crewWrapperArrayList = new ArrayList<>();
+
+        for (VehicleFighter vehicleFighter : Fighters)
+            if (vehicleFighter.getCrew().size() > 0)
+                crewWrapperArrayList.add(vehicleFighter.getCrew().get(0));
+
+
+
+
+        Collections.sort(crewWrapperArrayList, new Comparator<CrewWrapper>() {
+            @Override
+            public int compare(CrewWrapper lhs, CrewWrapper rhs) {
+                int compareTo = ((Integer)lhs.initiative.Triumph).compareTo(rhs.initiative.Triumph);
+                if (compareTo != 0)
+                    return -compareTo;
+                compareTo = ((Integer)lhs.initiative.Success).compareTo(rhs.initiative.Success);
+                if (compareTo != 0)
+                    return -compareTo;
+                compareTo = -((Integer)lhs.initiative.Advantages).compareTo(rhs.initiative.Advantages);
+                if (compareTo != 0)
+                    return -compareTo;
+
+                if (lhs.isOnPlayerSlot && rhs.isOnPlayerSlot) return 0;
+                if (!lhs.isOnPlayerSlot && !rhs.isOnPlayerSlot) return 0;
+                if (lhs.isOnPlayerSlot) return -1;
+                return 1;
+
+            }
+        });
+
+
+
+        return crewWrapperArrayList;
+
+    }
+
     public List<CrewWrapper> getCrews() {
 
         ArrayList<CrewWrapper> crewWrapperArrayList = new ArrayList<>();
@@ -241,15 +283,20 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
     }
 
     public void addVehicle(Vehicle vehicle) {
-        Fighters.add(new VehicleFighter(vehicle));
+        VehicleFighter fighter = new VehicleFighter(vehicle);
+        addFighter(fighter);
 
-        NextRound();
+    }
+
+    private void addFighter(VehicleFighter fighter) {
+        Fighters.add(fighter);
+        for (CrewWrapper wrapper : fighter.getCrew())
+            wrapper.Played = -1;
         FinalNotifyDataSetChanged();
     }
 
     public void removeVehicle(int fighter) {
         Fighters.remove(fighter);
-        //NextRound();
         FinalNotifyDataSetChanged();
     }
 
@@ -309,11 +356,15 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
                 reader.beginArray();
 
                 while (reader.hasNext())
-                    Fighters.add(VehicleFighter.getFighterFromJSON(reader, App.getContext(), Players));
+                    addFighter(VehicleFighter.getFighterFromJSON(reader, App.getContext(), Players));
 
 
                 reader.endArray();
+
+                this.Filename = Filename;
             }
+
+
 
 
         }
@@ -382,11 +433,18 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
         this.FinalNotifyDataSetChanged();
     }
 
+    public boolean InitiativeOnlyPilot = false;
+
     public void FinalNotifyDataSetChanged() {
         this.notifyDataSetChanged();
 
-        initiativeAdapter.updateData(getCrews());
+        if (initiativeAdapter != null) { //L'initiativeAdapter n'existe pas lors du chargement d'un fichier
 
+            if (InitiativeOnlyPilot)
+                initiativeAdapter.updateData(getPilots());
+            else
+                initiativeAdapter.updateData(getCrews());
+        }
 
 
     }
@@ -645,6 +703,13 @@ public class VehicleFighterAdapter extends RecyclerView.Adapter<VehicleFighterAd
 
 
 
+                            }
+                            else if (menuItem.getItemId() == R.id.mnuSetAsAllyOrEnnemy)
+                            {
+                                for  (CrewWrapper wrapper: Fighters.get(FighterID).getCrew())
+                                    wrapper.isOnPlayerSlot = !wrapper.isOnPlayerSlot;
+
+                                FinalNotifyDataSetChanged();
                             }
 
 

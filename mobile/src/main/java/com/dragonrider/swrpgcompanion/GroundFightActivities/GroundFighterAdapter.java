@@ -382,31 +382,31 @@ public class GroundFighterAdapter extends RecyclerView.Adapter<GroundFighterAdap
                         @Override
                         public void OnClosed() {
 
-                            if (myFighter.getCount() == 0) {
-                                new AlertDialog.Builder(btnDamage.getContext())
-                                        .setTitle(R.string.remove_dead_player)
-                                        .setMessage(R.string.remove_dead_player_question)
-                                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                if (myFighter.isPlayer)
-                                                    GroundFightScene.Players.add(myFighter.getBase());
-
-                                                Fighters.remove(myFighter);
-                                                GroundFighterAdapter.this.notifyDataSetChanged();
-                                                GroundFightScene.getInitiativeAdapter().updateData(Fighters);
-                                                dialog.dismiss();
-                                            }
-                                        })
-                                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-                                            @Override
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                dialog.dismiss();
-                                            }
-
-                                        })
-                                        .show();
-                            }
+//                            if (myFighter.getCount() == 0) {
+//                                new AlertDialog.Builder(btnDamage.getContext())
+//                                        .setTitle(R.string.remove_dead_player)
+//                                        .setMessage(R.string.remove_dead_player_question)
+//                                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+//                                            @Override
+//                                            public void onClick(DialogInterface dialog, int which) {
+//                                                if (myFighter.isPlayer)
+//                                                    GroundFightScene.Players.add(myFighter.getBase());
+//
+//                                                Fighters.remove(myFighter);
+//                                                GroundFighterAdapter.this.notifyDataSetChanged();
+//                                                GroundFightScene.getInitiativeAdapter().updateData(Fighters);
+//                                                dialog.dismiss();
+//                                            }
+//                                        })
+//                                        .setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+//                                            @Override
+//                                            public void onClick(DialogInterface dialog, int which) {
+//                                                dialog.dismiss();
+//                                            }
+//
+//                                        })
+//                                        .show();
+//                            }
 
                         }
                     });

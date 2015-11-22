@@ -10,7 +10,10 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.dragonrider.swrpgcompanion.R;
 
@@ -55,6 +58,21 @@ public class VehicleFightActivity extends Activity {
         if (!Objects.equals(filename, "")) {
             adapter.LoadFromFile(filename);
             filename = "";
+
+            for(final CrewWrapper wrapper : adapter.getCrews())
+                if (wrapper.isPlayer)
+                    InitiativePopup.Show(this, wrapper.baseNPC.Name, new InitiativePopup.IOnValidateInitiative() {
+                        @Override
+                        public void OnValidate(int Triumph, int Success, int Advantage) {
+                            wrapper.initiative = new Initiative();
+                            wrapper.initiative.Advantages = Advantage;
+                            wrapper.initiative.Triumph = Triumph;
+                            wrapper.initiative.Success = Success;
+                        }});
+
+
+
+
         }
 
         RecyclerView recyclerView = (RecyclerView)findViewById(R.id.RecyclerView);
@@ -124,21 +142,57 @@ public class VehicleFightActivity extends Activity {
             adapter.SaveFight();
     }
 
-    public void mnuEnergy_Click(MenuItem v) {
-        adapter.EnergyStep(this);
-    }
 
 
 
     public void mnuNextRound_Click(MenuItem v) {
+        ((TextView)findViewById(R.id.txtPhase)).setText(R.string.phase_planification);
+        adapter.InitiativeOnlyPilot = false;
+        findViewById(R.id.InitiativeRecyclerView).setVisibility(View.VISIBLE);
         adapter.NextRound();
         adapter.FinalNotifyDataSetChanged();
     }
 
 
-    public void mnuPlan_Click(MenuItem item) {
-        Intent intent = new Intent(this, VehiculePlanification.class);
-        startActivity(intent);
 
+
+    public void SwitchPhase(View view) {
+        if (((Button)view).getText() == getString(R.string.phase_plan)) {
+            ((TextView)findViewById(R.id.txtPhase)).setText(R.string.phase_planification);
+            Intent intent = new Intent(this, VehiculePlanification.class);
+            startActivity(intent);
+            findViewById(R.id.InitiativeRecyclerView).setVisibility(View.GONE);
+
+        }
+        else if (((Button)view).getText() == getString(R.string.phase_man)) {
+            ((TextView)findViewById(R.id.txtPhase)).setText(R.string.phase_maneuver);
+            adapter.InitiativeOnlyPilot = false;
+            findViewById(R.id.InitiativeRecyclerView).setVisibility(View.VISIBLE);
+            adapter.NextRound();
+            adapter.FinalNotifyDataSetChanged();
+
+        }
+        else if (((Button)view).getText() == getString(R.string.phase_ener)) {
+            ((TextView) findViewById(R.id.txtPhase)).setText(R.string.phase_energy);
+            adapter.EnergyStep(this);
+            findViewById(R.id.InitiativeRecyclerView).setVisibility(View.GONE);
+
+        }
+        else if (((Button)view).getText() == getString(R.string.phase_mov)) {
+            ((TextView)findViewById(R.id.txtPhase)).setText(R.string.phase_movement);
+            adapter.InitiativeOnlyPilot = true;
+            findViewById(R.id.InitiativeRecyclerView).setVisibility(View.VISIBLE);
+            adapter.NextRound();
+            adapter.FinalNotifyDataSetChanged();
+
+        }
+        else if (((Button)view).getText() == getString(R.string.phase_act)) {
+            ((TextView)findViewById(R.id.txtPhase)).setText(R.string.phase_action);
+            adapter.InitiativeOnlyPilot = false;
+            findViewById(R.id.InitiativeRecyclerView).setVisibility(View.VISIBLE);
+            adapter.NextRound();
+            adapter.FinalNotifyDataSetChanged();
+
+        }
     }
 }

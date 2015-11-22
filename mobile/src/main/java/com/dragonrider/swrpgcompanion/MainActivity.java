@@ -38,6 +38,7 @@ import com.dragonrider.swrpgcompanion.NPCViewer.NpcViewerActivity;
 import com.dragonrider.swrpgcompanion.PlayerActivities.EditPlayerActivity;
 import com.dragonrider.swrpgcompanion.Sabacc.ActivitySabaccGame;
 import com.dragonrider.swrpgcompanion.Scenario.activityScenarioViewer;
+import com.dragonrider.swrpgcompanion.XWingWrapper.ShipEditorActivity;
 import com.dragonrider.swrpgcompanion.XWingWrapper.VehicleFightActivity;
 import com.dragonrider.swrpgcompanion.XWingWrapper.ViewVehicleActivity;
 
@@ -134,6 +135,16 @@ public class MainActivity extends Activity {
                     }
                 }));
         adapter.addMainMenuItem("XWing", new MainMenuItem()
+                .setName("Editeur de véhicule")
+                .setDescription("Crée ou modifie les differents véhicules disponibles")
+                .setAction(new IMainMenuItemAction() {
+                    @Override
+                    public void Action() {
+                        Intent intent = new Intent(MainActivity.this, ShipEditorActivity.class);
+                        startActivity(intent);
+                    }
+                }));
+        adapter.addMainMenuItem("XWing", new MainMenuItem()
                 .setName("Nouveau Combat X-Wing")
                 .setDescription("Nouveau combat avec figurine X-Wing")
                 .setAction(new IMainMenuItemAction() {
@@ -141,6 +152,20 @@ public class MainActivity extends Activity {
                     public void Action() {
                         VehicleFightActivity.ClearFight();
                         Intent intent = new Intent(MainActivity.this, VehicleFightActivity.class);
+                        intent.putExtra("ARMADA", false);
+                        startActivity(intent);
+
+                    }
+                }));
+        adapter.addMainMenuItem("XWing", new MainMenuItem()
+                .setName("Nouveau Combat Armada")
+                .setDescription("Nouveau combat avec figurine Armada")
+                .setAction(new IMainMenuItemAction() {
+                    @Override
+                    public void Action() {
+                        VehicleFightActivity.ClearFight();
+                        Intent intent = new Intent(MainActivity.this, VehicleFightActivity.class);
+                        intent.putExtra("ARMADA", true);
                         startActivity(intent);
 
                     }
@@ -384,10 +409,15 @@ public class MainActivity extends Activity {
     }
 
 
+    @Override
+    public void onBackPressed() {
+//        super.onBackPressed();
 
-
-
-
+        if (mDrawerLayout.isDrawerOpen(mDrawerList))
+            super.onBackPressed();
+        else
+            mDrawerLayout.openDrawer(mDrawerList);
+    }
 
     public interface IMainMenuItemAction {
         void Action();

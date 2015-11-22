@@ -64,6 +64,8 @@ public class VehiculeFighterDamagePopup {
 
 
 
+    static int mFighterArmor;
+
     public static void Show(final Context context, final VehicleFighter fighter, int Damage, final onValidatePopupListener onvalidatePopupListener) {
 
         View baseView = LayoutInflater.from(context).inflate(R.layout.vehicle_damage_popup, null);
@@ -86,7 +88,9 @@ public class VehiculeFighterDamagePopup {
 
 
 
-        iDamage = Damage;
+        iDamage = Damage ;
+        mFighterArmor = fighter.getBaseVehicle().getArmor();
+
 
         txtDamage = (TextView) baseView.findViewById(R.id.txtDamage);
         txtFinal = (TextView) baseView.findViewById(R.id.txtFinalDamage);
@@ -94,14 +98,14 @@ public class VehiculeFighterDamagePopup {
         final SeekBar bar = (SeekBar)baseView.findViewById(R.id.skDamage);
 
         bar.setMax(iDamage + 10);
-        bar.setProgress(iDamage);
+        bar.setProgress(Damage);
 
         View.OnClickListener listener = new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 ((RadioGroup)v.getParent()).check(v.getId());
                 mIgnoreArmor = Integer.valueOf((String)((ToggleButton)v).getText());
-                UpdateText(bar.getProgress());
+                UpdateText();
             }
         };
 
@@ -119,11 +123,12 @@ public class VehiculeFighterDamagePopup {
 
 
 
-        //bar.setMax(fighter.getTotalHullTrauma());
         bar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-                UpdateText(progress);
+                iDamage = progress;
+
+                UpdateText();
             }
 
             @Override
@@ -137,7 +142,7 @@ public class VehiculeFighterDamagePopup {
             }
         });
 
-        UpdateText(Damage);
+        UpdateText();
 
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -238,14 +243,19 @@ public class VehiculeFighterDamagePopup {
 
     }
 
-    private static void UpdateText(int progress) {
-        //int iArmor = fighter.getBaseVehicle().getArmor() - mIgnoreArmor;
-        //if (iArmor < 0) iArmor = 0;
-        //iDamage = progress - iArmor;
-        if (iDamage < 0) iDamage = 0;
+    private static void UpdateText() {
 
-        txtDamage.setText(String.valueOf(progress));
-        txtFinal.setText(String.format("%s Dégât%s", iDamage, iDamage > 1 ? "s" : ""));
+
+        int iIgnoreArmor = mFighterArmor - mIgnoreArmor;
+        if (iIgnoreArmor < 0)
+            iIgnoreArmor = 0;
+
+        int realDamage = iDamage - iIgnoreArmor;
+        if (realDamage < 0)
+            realDamage = 0;
+
+        txtDamage.setText(String.valueOf(iDamage));
+        txtFinal.setText(String.format("%s Dégât%s", realDamage, realDamage > 1 ? "s" : ""));
 
 
     }

@@ -4,20 +4,75 @@
     android:layout_height="match_parent">
 
     <android.support.v7.widget.RecyclerView
+        android:background="#DDDDDD"
         android:id="@+id/InitiativeRecyclerView"
         android:layout_height="64dp"
         android:layout_width="match_parent"
-        android:padding="2dp"
+        android:padding="2dp"/>
 
-        />
 
+    <LinearLayout
+        style="?android:attr/buttonBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Button
+            style="?android:attr/buttonBarButtonStyle"
+            android:id="@+id/btnPlan"
+            android:text="@string/phase_plan"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:onClick="SwitchPhase"
+            android:layout_height="wrap_content" />
+        <Button
+            style="?android:attr/buttonBarButtonStyle"
+            android:id="@+id/btnMan"
+            android:text="@string/phase_man"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:onClick="SwitchPhase"
+            android:layout_height="wrap_content" />
+        <Button
+            style="?android:attr/buttonBarButtonStyle"
+            android:id="@+id/btnEnergy"
+            android:text="@string/phase_ener"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:onClick="SwitchPhase"
+            android:layout_height="wrap_content" />
+        <Button
+            style="?android:attr/buttonBarButtonStyle"
+            android:id="@+id/btnMovement"
+            android:text="@string/phase_mov"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:onClick="SwitchPhase"
+            android:layout_height="wrap_content" />
+        <Button
+            style="?android:attr/buttonBarButtonStyle"
+            android:id="@+id/btnActions"
+            android:text="@string/phase_act"
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:onClick="SwitchPhase"
+            android:layout_height="wrap_content" />
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txtPhase"
+        android:text="@string/phase_planification"
+        android:gravity="center"
+        android:textSize="23sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/RecyclerView"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:padding="2dp"
         android:layout_weight="1"/>
 
 </LinearLayout>
